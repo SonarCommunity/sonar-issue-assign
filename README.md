@@ -1,4 +1,4 @@
-sonar-issue-assign-plugin
+Sonar Issue Assign Plugin
 ==========================
 
 This plugin will automatically assign new issues raised in the current analysis to the SCM author responsible
@@ -19,11 +19,15 @@ The plugin is configurable on a project level.  Configurable items include: enab
 
 This plugin was written using the SonarQube 4.1 API, and tested on Subversion 1.7 and Git.
 
+Project homepage: http://docs.codehaus.org/display/SONAR/Issue+Assign+Plugin
+
+Issue tracking: http://jira.codehaus.org/browse/SONARPLUGINS/component/16478
+
+
 Future plans:
 
-associate issue with a configurable action plan (v4.3+)
+associate issue with a configurable action plan (SonarQube v4.3+)
 
-improve efficiency of SCM measure collection (only collect measures for resources that have new issues raised against them)
 
 
 
