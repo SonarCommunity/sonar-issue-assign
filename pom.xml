@@ -21,6 +21,7 @@
 
   <name>SonarQube Issue Assign Plugin</name>
   <description>Assigns issues to Sonar users</description>
+  <url>http://docs.codehaus.org/display/SONAR/Issue+Assign+Plugin</url>
   <inceptionYear>2014</inceptionYear>
 
   <organization>
@@ -42,6 +43,22 @@
       <timezone>+0</timezone>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</developerConnection>
+    <url>https://github.com/SonarCommunity/sonar-issue-assign</url>
+  </scm>
+
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/16478</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Cloudbees</system>
+    <url>https://sonarplugins.ci.cloudbees.com/job/IssueAssign/</url>
+  </ciManagement>
 
   <dependencies>
     <dependency>
