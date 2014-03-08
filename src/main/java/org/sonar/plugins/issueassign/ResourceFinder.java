@@ -22,7 +22,7 @@ package org.sonar.plugins.issueassign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SonarIndex;
-import org.sonar.api.resources.JavaFile;
+import org.sonar.api.resources.File;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.ResourceNotFoundException;
 
@@ -38,19 +38,19 @@ public class ResourceFinder {
   }
 
   public Resource find(final String componentKey) throws ResourceNotFoundException {
-    final Resource resource = getJavaResource(componentKey);
+    final Resource resource = getResource(componentKey);
     if (resource == null) {
-        LOG.debug("Not a Java resource, searching entire index...");
+        LOG.debug("Cannot lookup resource directly, searching entire index...");
       return searchAllResources(componentKey);
     }
     return resource;
   }
 
-  private Resource getJavaResource(final String componentKey) {
+  private Resource getResource(final String componentKey) {
     try {
       final String resourceKey = getResourceKeyFromComponentKey(componentKey);
-      final Resource javaResource = this.sonarIndex.getResource(new JavaFile(resourceKey));
-      LOG.debug("Found Java resource with key: [" + javaResource.getKey() + "]");
+      final Resource javaResource = this.sonarIndex.getResource(File.create(resourceKey));
+      LOG.debug("Found resource with key: [" + javaResource.getKey() + "]");
       return javaResource;
     }
     catch (final Exception e) {

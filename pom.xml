@@ -10,7 +10,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.buildVersion>4.1</sonar.buildVersion>
+    <sonar.buildVersion>4.2-RC2</sonar.buildVersion>
     <sonar.pluginName>SonarQube Issue Assign Plugin</sonar.pluginName>
     <jdk.min.version>1.6</jdk.min.version>
   </properties>
@@ -85,6 +85,11 @@
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert-core</artifactId>
       <version>2.0M10</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
     </dependency>
   </dependencies>
 

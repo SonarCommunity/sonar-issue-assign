@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.resources.File;
-import org.sonar.api.resources.JavaFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.ResourceNotFoundException;
 
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class ResourceFinderTest {
 
   @Mock private SonarIndex sonarIndex;
-  @Mock private JavaFile javaResource;
+  @Mock private File javaResource;
 
   private static final String COMPONENT_KEY = "org:project:resource";
   private static final String RESOURCE_KEY = "resource";
@@ -64,7 +63,7 @@ public class ResourceFinderTest {
   @Test
   public void testFindWithJavaResource() throws ResourceNotFoundException {
 
-    when(sonarIndex.getResource(isA(JavaFile.class))).thenReturn(javaResource);
+    when(sonarIndex.getResource(isA(File.class))).thenReturn(javaResource);
 
     final ResourceFinder classUnderTest = new ResourceFinder(sonarIndex);
     final Resource resource = classUnderTest.find(COMPONENT_KEY);
@@ -75,7 +74,7 @@ public class ResourceFinderTest {
   @Test
   public void testFindWithResourceWithNonJavaComponentKey() throws ResourceNotFoundException {
 
-    when(sonarIndex.getResource(isA(JavaFile.class))).thenReturn(null);
+    when(sonarIndex.getResource(isA(File.class))).thenReturn(null);
     when(sonarIndex.getResources()).thenReturn(resources);
 
     final ResourceFinder classUnderTest = new ResourceFinder(sonarIndex);
@@ -87,7 +86,7 @@ public class ResourceFinderTest {
   @Test
   public void testFindWithNonJavaResource() throws ResourceNotFoundException {
 
-    when(sonarIndex.getResource(isA(JavaFile.class))).thenReturn(null);
+    when(sonarIndex.getResource(isA(File.class))).thenReturn(null);
     when(sonarIndex.getResources()).thenReturn(resources);
 
     final ResourceFinder classUnderTest = new ResourceFinder(sonarIndex);
@@ -101,7 +100,7 @@ public class ResourceFinderTest {
 
     nonJavaResource.setId(null);
 
-    when(sonarIndex.getResource(isA(JavaFile.class))).thenReturn(null);
+    when(sonarIndex.getResource(isA(File.class))).thenReturn(null);
     when(sonarIndex.getResources()).thenReturn(resources);
 
     final ResourceFinder classUnderTest = new ResourceFinder(sonarIndex);
@@ -113,7 +112,7 @@ public class ResourceFinderTest {
   @Test(expected = ResourceNotFoundException.class)
   public void testFindWithNoResourceFound() throws ResourceNotFoundException {
 
-    when(sonarIndex.getResource(isA(JavaFile.class))).thenReturn(null);
+    when(sonarIndex.getResource(isA(File.class))).thenReturn(null);
     when(sonarIndex.getResources()).thenReturn(resources);
 
     final ResourceFinder classUnderTest = new ResourceFinder(sonarIndex);
