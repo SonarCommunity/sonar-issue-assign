@@ -51,16 +51,13 @@ public class IssueAssigner implements IssueHandler {
 
     final Issue issue = context.issue();
 
-    //TODO not sure this check is necessary
-    if (issue.isNew()) {
-      LOG.debug("Found new issue [" + issue.key() + "]");
-      try {
-        this.assignIssue(context, issue);
-      } catch (final IssueAssignPluginException pluginException) {
-        LOG.warn("Unable to assign issue [" + issue.key() + "]");
-      } catch (final Exception e) {
-        LOG.error("Error assigning issue [" + issue.key() + "]", e);
-      }
+    LOG.debug("Found issue [" + issue.key() + "]");
+    try {
+      this.assignIssue(context, issue);
+    } catch (final IssueAssignPluginException pluginException) {
+      LOG.warn("Unable to assign issue [" + issue.key() + "]");
+    } catch (final Exception e) {
+      LOG.error("Error assigning issue [" + issue.key() + "]", e);
     }
   }
 

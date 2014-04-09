@@ -51,25 +51,11 @@ public class IssueAssignerTest {
   private static final String ISSUE_KEY = "issueKey";
 
   @Test
-  public void testOnIssueNotNewIssue() throws Exception {
-    when(context.issue()).thenReturn(issue);
-    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(issue.isNew()).thenReturn(false);
-
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-    classUnderTest.onIssue(context);
-  }
-
-  @Test
   public void testOnIssueWithScmAuthor() throws Exception {
 
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(issue.isNew()).thenReturn(true);
     when(blame.getScmAuthorForIssue(issue)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenReturn(assignee);
@@ -89,7 +75,6 @@ public class IssueAssignerTest {
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(issue.isNew()).thenReturn(true);
     when(blame.getScmAuthorForIssue(issue)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenThrow(RuntimeException.class);
@@ -109,7 +94,6 @@ public class IssueAssignerTest {
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(issue.isNew()).thenReturn(true);
     when(blame.getScmAuthorForIssue(issue)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenThrow(IssueAssignPluginException.class);
@@ -143,7 +127,6 @@ public class IssueAssignerTest {
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(issue.isNew()).thenReturn(true);
     when(blame.getScmAuthorForIssue(issue)).thenReturn(null);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee()).thenReturn(assignee);
