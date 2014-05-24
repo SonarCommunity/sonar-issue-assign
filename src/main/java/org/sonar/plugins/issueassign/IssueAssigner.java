@@ -84,13 +84,7 @@ public class IssueAssigner implements IssueHandler {
               Date creationDate = issue.creationDate();
               Date updateDate = issue.updateDate();
               if (introducedDate != null) {
-
-                  boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
-                  boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
-
-                  if (problemCreatedAfterIntroducedDate || problemUpdatedAfterIntroducedDate) {
-                      result = true;
-                  }
+                  result = this.createdOrUpdatedAfterIntroductionDate(creationDate, updateDate, introducedDate);
               }
           }
       } catch (ParseException e) {
@@ -98,6 +92,16 @@ public class IssueAssigner implements IssueHandler {
       }
 
       return result;
+  }
+
+  private boolean createdOrUpdatedAfterIntroductionDate(final Date creationDate, final Date updateDate, final Date introducedDate) {
+      boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
+      boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
+
+      if (problemCreatedAfterIntroducedDate || problemUpdatedAfterIntroducedDate) {
+          return true;
+      }
+      return false;
   }
 
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {

@@ -52,8 +52,7 @@ public class ResourceFinder {
       final Resource javaResource = this.sonarIndex.getResource(File.create(resourceKey));
       LOG.debug("Found resource with key: [" + javaResource.getKey() + "]");
       return javaResource;
-    }
-    catch (final Exception e) {
+    } catch (final Exception e) {
       return null;
     }
   }
