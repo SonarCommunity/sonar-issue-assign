@@ -35,7 +35,7 @@ import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAssignerTest {
@@ -65,23 +65,32 @@ public class IssueAssignerTest {
     Whitebox.setInternalState(classUnderTest, "blame", blame);
     Whitebox.setInternalState(classUnderTest, "assign", assign);
     classUnderTest.onIssue(context);
+
+    //  verify that assignIssue() wasn't called.
+    verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
+    verifyZeroInteractions(blame);
   }
   
   @Test
-  public void testOnIssueCreationDate() throws Exception {
+  public void creationDateAfterDefectIntroducedDate() throws Exception {
+
+    String issueCreationDateText = "03/04/2014";
+    String defectIntroducedDateText = "02/04/2014";
 
     SimpleDateFormat df = new SimpleDateFormat(IssueAssigner.DEFECT_INTRODUCED_DATE_FORMAT);
-    Date d = df.parse("03/04/2014");
+    Date issueCreationDate = df.parse(issueCreationDateText);
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.isNew()).thenReturn(false);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE)).thenReturn("02/04/2014");
+    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE)).thenReturn(defectIntroducedDateText);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)).thenReturn(true);
     when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR_WITH_EMAIL);
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)).thenReturn("<");
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)).thenReturn(">");
     when(assign.getAssignee(SCM_AUTHOR_WITH_EMAIL)).thenReturn(assignee);
-    when(issue.isNew()).thenReturn(false);
-    when(issue.creationDate()).thenReturn(d);
+
+    when(issue.creationDate()).thenReturn(issueCreationDate);
 
     final IssueHandler classUnderTest =
         new org.sonar.plugins.issueassign.IssueAssigner(settings, userFinder, sonarIndex);
@@ -89,17 +98,24 @@ public class IssueAssignerTest {
     Whitebox.setInternalState(classUnderTest, "assign", assign);
     Whitebox.setInternalState(classUnderTest, "settings", settings);
     classUnderTest.onIssue(context);
+
+    // verify that assignIssue() was called
+    verify(settings).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
+    verify(blame).getScmAuthorForIssue(issue, true);
   }
   
   @Test
-  public void testOnIssueCreationDate2() throws Exception {
+  public void creationDateBeforeDefectIntroducedDate() throws Exception {
+
+    String issueCreationDateText = "01/04/2014";
+    String defectIntroducedDateText = "02/04/2014";
 
     SimpleDateFormat df = new SimpleDateFormat(IssueAssigner.DEFECT_INTRODUCED_DATE_FORMAT);
-    Date d = df.parse("03/04/2014");
+    Date d = df.parse(issueCreationDateText);
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE)).thenReturn("05/04/2014");
+    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE)).thenReturn(defectIntroducedDateText);
     when(issue.isNew()).thenReturn(false);
     when(issue.creationDate()).thenReturn(d);
     when(issue.updateDate()).thenReturn(d);
@@ -109,6 +125,10 @@ public class IssueAssignerTest {
     Whitebox.setInternalState(classUnderTest, "blame", blame);
     Whitebox.setInternalState(classUnderTest, "assign", assign);
     classUnderTest.onIssue(context);
+
+    //  verify that assignIssue() wasn't called.
+    verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
+    verifyZeroInteractions(blame);
   }
 
   @Test

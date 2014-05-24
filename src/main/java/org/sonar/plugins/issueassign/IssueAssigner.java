@@ -37,7 +37,7 @@ import java.util.Date;
 
 public class IssueAssigner implements IssueHandler {
 
-  static final String DEFECT_INTRODUCED_DATE_FORMAT = "MM/dd/yyyy";
+  static final String DEFECT_INTRODUCED_DATE_FORMAT = "dd/MM/yyyy";
   private static final Logger LOG = LoggerFactory.getLogger(IssueAssigner.class);
   private final Settings settings;
   private final Blame blame;
