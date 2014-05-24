@@ -81,10 +81,8 @@ public class IssueAssigner implements IssueHandler {
           if (defectIntroducedDatePref != null) {
               introducedDate = df.parse(defectIntroducedDatePref);
 
-              Date creationDate = issue.creationDate();
-              Date updateDate = issue.updateDate();
               if (introducedDate != null) {
-                  result = this.createdOrUpdatedAfterIntroductionDate(creationDate, updateDate, introducedDate);
+                  result = this.createdOrUpdatedAfterIntroductionDate(issue, introducedDate);
               }
           }
       } catch (ParseException e) {
@@ -94,7 +92,9 @@ public class IssueAssigner implements IssueHandler {
       return result;
   }
 
-  private boolean createdOrUpdatedAfterIntroductionDate(final Date creationDate, final Date updateDate, final Date introducedDate) {
+  private boolean createdOrUpdatedAfterIntroductionDate(final Issue issue, final Date introducedDate) {
+      Date creationDate = issue.creationDate();
+      Date updateDate = issue.updateDate();
       boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
       boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
 
