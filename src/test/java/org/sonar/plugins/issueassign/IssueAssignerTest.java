@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.issueassign;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -48,6 +51,7 @@ public class IssueAssignerTest {
 
   private static final String COMPONENT_KEY = "str1:str2:str3";
   private static final String SCM_AUTHOR = "author";
+  private static final String SCM_AUTHOR_WITH_EMAIL = "author <email@test.com>";
   private static final String ISSUE_KEY = "issueKey";
 
   @Test
@@ -62,6 +66,50 @@ public class IssueAssignerTest {
     Whitebox.setInternalState(classUnderTest, "assign", assign);
     classUnderTest.onIssue(context);
   }
+  
+  @Test
+  public void testOnIssueCreationDate() throws Exception {
+	
+	SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+	Date d = df.parse("04/03/2014");
+    when(context.issue()).thenReturn(issue);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
+    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE)).thenReturn("04/02/2014");
+    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR_WITH_EMAIL);
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)).thenReturn("<");
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)).thenReturn(">");
+    when(assign.getAssignee(SCM_AUTHOR_WITH_EMAIL)).thenReturn(assignee);
+    when(issue.isNew()).thenReturn(false);
+    when(issue.creationDate()).thenReturn(d);
+
+    final IssueHandler classUnderTest =
+        new org.sonar.plugins.issueassign.IssueAssigner(measuresCollector, settings, userFinder);
+    Whitebox.setInternalState(classUnderTest, "blame", blame);
+    Whitebox.setInternalState(classUnderTest, "assign", assign);
+    Whitebox.setInternalState(classUnderTest, "settings", settings);
+    classUnderTest.onIssue(context);
+  }
+  
+  @Test
+  public void testOnIssueCreationDate2() throws Exception {
+	
+	SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+	Date d = df.parse("04/03/2014");
+    when(context.issue()).thenReturn(issue);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
+    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE)).thenReturn("04/05/2014");
+    when(issue.isNew()).thenReturn(false);
+    when(issue.creationDate()).thenReturn(d);
+    when(issue.updateDate()).thenReturn(d);
+
+    final IssueHandler classUnderTest =
+        new org.sonar.plugins.issueassign.IssueAssigner(measuresCollector, settings, userFinder);
+    Whitebox.setInternalState(classUnderTest, "blame", blame);
+    Whitebox.setInternalState(classUnderTest, "assign", assign);
+    classUnderTest.onIssue(context);
+  }
 
   @Test
   public void testOnIssueWithScmAuthor() throws Exception {
@@ -70,7 +118,7 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(issue.isNew()).thenReturn(true);
-    when(blame.getScmAuthorForIssue(issue)).thenReturn(SCM_AUTHOR);
+    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenReturn(assignee);
 
@@ -90,7 +138,7 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(issue.isNew()).thenReturn(true);
-    when(blame.getScmAuthorForIssue(issue)).thenReturn(SCM_AUTHOR);
+    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenThrow(RuntimeException.class);
 
@@ -110,7 +158,7 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(issue.isNew()).thenReturn(true);
-    when(blame.getScmAuthorForIssue(issue)).thenReturn(SCM_AUTHOR);
+    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenThrow(IssueAssignPluginException.class);
 
@@ -144,7 +192,7 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(issue.isNew()).thenReturn(true);
-    when(blame.getScmAuthorForIssue(issue)).thenReturn(null);
+    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(null);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee()).thenReturn(assignee);
 

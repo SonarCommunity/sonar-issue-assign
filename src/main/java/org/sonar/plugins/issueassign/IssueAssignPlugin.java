@@ -25,6 +25,7 @@ import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,13 +48,41 @@ import java.util.List;
         description = "Enable or disable the Issue Assign plugin.",
         project = true,
         type = PropertyType.BOOLEAN,
-        defaultValue = "false")
+        defaultValue = "false"),
+    @Property(key = IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE,
+    	name = "Defect introduced date",
+    	description = "Any defects introduced or updated after this date are auto assigned, any defects before will be ignored. Use the format 03/22/2010 (mm/dd/yyyy)",
+    	project = true, 
+    	type = PropertyType.STRING, 
+    	defaultValue = ""),
+    @Property(key = IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR,
+    	name = "Author email start character",
+    	description = "Some SCM authors may not be formatted in a way that will work with this plug in, so long as the Author contains an email address and is delimited with a start and end charater this pref can be used to find the email in the Author name.",
+    	project = true,
+    	type = PropertyType.STRING,
+    	defaultValue = ""),
+    @Property(key = IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR,
+    	name = "Author email end character",
+    	description = "Some SCM authors may not be formatted in a way that will work with this plug in, so long as the Author contains an email address and is delimited with a start and end charater this pref can be used to find the email in the Author name.",
+    	project = true,
+    	type = PropertyType.STRING,
+    	defaultValue = ""),
+    @Property(key = IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR,
+    	name = "Always assign to Author",
+    	description = "Set to true if you want to always assign to the defect author, set to false if you want to assign to the last commiter on the file if they are different from the author.",
+    	project = true,
+    	type = PropertyType.BOOLEAN,
+    	defaultValue = "false")
 })
 public final class IssueAssignPlugin extends SonarPlugin {
 
   public static final String PROPERTY_DEFAULT_ASSIGNEE = "default.assignee";
   public static final String PROPERTY_OVERRIDE_ASSIGNEE = "override.assignee";
   public static final String PROPERTY_ENABLED = "issueassignplugin.enabled";
+  public static final String PROPERTY_DEFECT_ITRODUCED_DATE = "defect.introduced";
+  public static final String PROPERTY_EMAIL_START_CHAR = "email.start.char";
+  public static final String PROPERTY_EMAIL_END_CHAR = "email.end.char";
+  public static final String PROPERTY_ASSIGN_TO_AUTHOR = "assigne.to.last.commiter";
 
   public List getExtensions() {
     return Arrays.asList(IssueAssigner.class);

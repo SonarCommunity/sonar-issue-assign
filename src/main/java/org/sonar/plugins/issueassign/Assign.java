@@ -37,7 +37,7 @@ public class Assign {
 
   public Assign(final Settings settings, final UserFinder userFinder) {
     this.settings = settings;
-    this.users = new Users(userFinder);
+    this.users = new Users(userFinder, settings);
   }
 
   public User getAssignee(final String scmAuthor) throws IssueAssignPluginException {
