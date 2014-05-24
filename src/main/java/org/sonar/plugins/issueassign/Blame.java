@@ -44,7 +44,7 @@ public class Blame {
     this.measuresFinder = measuresFinder;
   }
 
-  public String getScmAuthorForIssue(final Issue issue, final boolean assignToAuthor) throws MissingScmMeasureDataException {
+  public String getScmAuthorForIssue(final Issue issue, final boolean assignToAuthor) throws IssueAssignPluginException {
 
     final String authorForIssueLine = this.getAuthorForIssueLine(issue);
     final String lastCommitterForResource = getLastCommitterForResource(issue.componentKey());

@@ -19,12 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.SimpleFormatter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SonarIndex;
@@ -36,8 +30,14 @@ import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class IssueAssigner implements IssueHandler {
 
+  static final String DEFECT_INTRODUCED_DATE_FORMAT = "MM/dd/yyyy";
   private static final Logger LOG = LoggerFactory.getLogger(IssueAssigner.class);
   private final Settings settings;
   private final Blame blame;
@@ -71,37 +71,38 @@ public class IssueAssigner implements IssueHandler {
   }
   
   private boolean issueAfterDefectIntroducedDate(final Issue issue) {
-	  
-	  boolean result = false;
-	  String defectIntroducedDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE);
-	  DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-	  Date introducedDate = null; 
-	  try {
-		  if(defectIntroducedDatePref != null) {
-			  introducedDate = df.parse(defectIntroducedDatePref);
-			  
-			  Date creationDate = issue.creationDate();
-			  Date updateDate = issue.updateDate();
-			  if(introducedDate != null) {
-				
-				  boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
-				  boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
-				  
-				  if(problemCreatedAfterIntroducedDate || problemUpdatedAfterIntroducedDate) {
-					  result = true;
-				  }
-			  }
-		  }
-	  } catch(ParseException e) {
-		LOG.error("Unable to parse date: " + defectIntroducedDatePref);  
-	  }	  
-	  
-	  return result;
+
+      boolean result = false;
+      String defectIntroducedDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE);
+      DateFormat df = new SimpleDateFormat(DEFECT_INTRODUCED_DATE_FORMAT);
+      Date introducedDate;
+
+      try {
+          if (defectIntroducedDatePref != null) {
+              introducedDate = df.parse(defectIntroducedDatePref);
+
+              Date creationDate = issue.creationDate();
+              Date updateDate = issue.updateDate();
+              if (introducedDate != null) {
+
+                  boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
+                  boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
+
+                  if (problemCreatedAfterIntroducedDate || problemUpdatedAfterIntroducedDate) {
+                      result = true;
+                  }
+              }
+          }
+      } catch (ParseException e) {
+          LOG.error("Unable to parse date: " + defectIntroducedDatePref);
+      }
+
+      return result;
   }
 
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {
 
-	final boolean assignToAuthor = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
+    final boolean assignToAuthor = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
     final String author = blame.getScmAuthorForIssue(issue, assignToAuthor);
     final User assignee;
 

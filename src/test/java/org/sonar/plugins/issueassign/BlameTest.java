@@ -99,7 +99,7 @@ public class BlameTest {
     when(mockIssue.line()).thenReturn(1);
 
     final Blame classUnderTest = new Blame(resourceFinder, measuresFinder);
-    final String author = classUnderTest.getScmAuthorForIssue(mockIssue);
+    final String author = classUnderTest.getScmAuthorForIssue(mockIssue, false);
     assertThat(author).isEqualTo(AUTHOR1);
   }
 

@@ -11,7 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.buildVersion>4.3</sonar.buildVersion>
-    <sonar.pluginName>SonarQube Issue Assign Plugin</sonar.pluginName>
+    <sonar.pluginName>Issue Assign Plugin</sonar.pluginName>
     <jdk.min.version>1.6</jdk.min.version>
   </properties>
 

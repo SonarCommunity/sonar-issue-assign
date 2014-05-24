@@ -45,20 +45,20 @@ public class Users {
   }
   
   public Users(final UserFinder userFinder, final Settings settings) {
-	this.userFinder = userFinder;
-	this.settings = settings;
+    this.userFinder = userFinder;
+    this.settings = settings;
   }
 
   public User getSonarUser(final String userName) throws SonarUserNotFoundException {
 
     final User sonarUser = this.userFinder.findByLogin(userName);
     if (sonarUser == null) {
-    	
+
       String tempUserName = userName;
-	  if (isAuthorAndEmail(tempUserName)) {
-		  tempUserName = extractEmail(tempUserName);
-	  }
-	  
+      if (isAuthorAndEmail(tempUserName)) {
+          tempUserName = extractEmail(tempUserName);
+      }
+
       if (isEmailAddress(tempUserName)) {
         LOG.debug("SCM author is an email address, trying lookup by email...");
         return this.getSonarUserByEmail(tempUserName);
@@ -76,36 +76,35 @@ public class Users {
   }
 
   private boolean isAuthorAndEmail(final String userName) {
-	
-	boolean result = false;
-	
-	if(this.settings != null) {
-		String startDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR);
-		String endDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR);
-		
-		if(startDelim != null && endDelim != null && startDelim.trim().length() > 0 && endDelim.trim().length() > 0) {
-			result = userName.contains(startDelim) && userName.contains(endDelim);
-		}
-	}
+
+    boolean result = false;
+
+    if (this.settings != null) {
+        String startDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR);
+        String endDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR);
+
+        if (startDelim != null && endDelim != null && startDelim.trim().length() > 0 && endDelim.trim().length() > 0) {
+            result = userName.contains(startDelim) && userName.contains(endDelim);
+        }
+    }
     
-	return isEmailAddress(userName) && result;
+    return isEmailAddress(userName) && result;
   }
   
   private String extractEmail(final String userName) {
   
-	String tempUserName = userName;
-	
-	if(this.settings != null) {
-		String startDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR);
-		String endDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR);
-		
-		if(startDelim != null && endDelim != null && startDelim.trim().length() > 0 && endDelim.trim().length() > 0) {
-			  
-			tempUserName = tempUserName.substring(tempUserName.indexOf(startDelim)+1);
-		    tempUserName = tempUserName.substring(0, tempUserName.indexOf(endDelim));
-		}
-	}
-	return tempUserName;
+    String tempUserName = userName;
+
+    if (this.settings != null) {
+        String startDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR);
+        String endDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR);
+
+        if (startDelim != null && endDelim != null && startDelim.trim().length() > 0 && endDelim.trim().length() > 0) {
+            tempUserName = tempUserName.substring(tempUserName.indexOf(startDelim)+1);
+            tempUserName = tempUserName.substring(0, tempUserName.indexOf(endDelim));
+        }
+    }
+    return tempUserName;
   }
   
   private User getSonarUserByEmail(final String email) throws SonarUserNotFoundException {

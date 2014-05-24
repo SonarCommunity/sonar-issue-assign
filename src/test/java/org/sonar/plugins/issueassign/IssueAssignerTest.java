@@ -19,9 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,6 +31,9 @@ import org.sonar.api.issue.IssueHandler;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.mockito.Mockito.when;
 
@@ -69,13 +69,13 @@ public class IssueAssignerTest {
   
   @Test
   public void testOnIssueCreationDate() throws Exception {
-	
-	SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-	Date d = df.parse("04/03/2014");
+
+    SimpleDateFormat df = new SimpleDateFormat(IssueAssigner.DEFECT_INTRODUCED_DATE_FORMAT);
+    Date d = df.parse("03/04/2014");
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE)).thenReturn("04/02/2014");
+    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE)).thenReturn("02/04/2014");
     when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR_WITH_EMAIL);
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)).thenReturn("<");
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)).thenReturn(">");
@@ -84,7 +84,7 @@ public class IssueAssignerTest {
     when(issue.creationDate()).thenReturn(d);
 
     final IssueHandler classUnderTest =
-        new org.sonar.plugins.issueassign.IssueAssigner(measuresCollector, settings, userFinder);
+        new org.sonar.plugins.issueassign.IssueAssigner(settings, userFinder, sonarIndex);
     Whitebox.setInternalState(classUnderTest, "blame", blame);
     Whitebox.setInternalState(classUnderTest, "assign", assign);
     Whitebox.setInternalState(classUnderTest, "settings", settings);
@@ -93,19 +93,19 @@ public class IssueAssignerTest {
   
   @Test
   public void testOnIssueCreationDate2() throws Exception {
-	
-	SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-	Date d = df.parse("04/03/2014");
+
+    SimpleDateFormat df = new SimpleDateFormat(IssueAssigner.DEFECT_INTRODUCED_DATE_FORMAT);
+    Date d = df.parse("03/04/2014");
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE)).thenReturn("04/05/2014");
+    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE)).thenReturn("05/04/2014");
     when(issue.isNew()).thenReturn(false);
     when(issue.creationDate()).thenReturn(d);
     when(issue.updateDate()).thenReturn(d);
 
     final IssueHandler classUnderTest =
-        new org.sonar.plugins.issueassign.IssueAssigner(measuresCollector, settings, userFinder);
+        new org.sonar.plugins.issueassign.IssueAssigner(settings, userFinder, sonarIndex);
     Whitebox.setInternalState(classUnderTest, "blame", blame);
     Whitebox.setInternalState(classUnderTest, "assign", assign);
     classUnderTest.onIssue(context);
