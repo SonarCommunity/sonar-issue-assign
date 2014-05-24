@@ -14,10 +14,9 @@ method has exceeded the maximum threshold.  In this case the issue will be assig
 For Git users, the SCM author is an email address.  The plugin can map this email address to a Sonar user,
 provided the email address is the same for the SCM and SonarQube accounts.
 
-
 The plugin is configurable on a project level.  Configurable items include: enable/disable the plugin, default assignee if SCM author doesn't exist in SonarQube, an 'override' assignee that is useful for testing so that other users are not spammed with notifications.
 
-This plugin was written using the SonarQube 4.1 API, and tested on Subversion 1.7 and Git.
+This plugin was written using the SonarQube 4.2 API, and tested on Subversion 1.7 and Git.
 
 Project homepage: http://docs.codehaus.org/display/SONAR/Issue+Assign+Plugin
 
