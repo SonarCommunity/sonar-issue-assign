@@ -39,6 +39,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueNotificationsTest {
@@ -64,7 +65,7 @@ public class IssueNotificationsTest {
 
     ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
 
-    issueNotifications.sendNewIssues(project, issuesByUser);
+    issueNotifications.sendIssues(project, issuesByUser, NOTIFICATION_TYPE_NEW);
 
     verify(manager).scheduleForSending(notificationCaptor.capture());
     Notification notification = notificationCaptor.getValue();

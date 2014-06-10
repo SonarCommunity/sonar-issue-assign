@@ -41,6 +41,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendIssueNotificationsPostJobTest {
@@ -62,6 +64,9 @@ public class SendIssueNotificationsPostJobTest {
   @Captor
   ArgumentCaptor<Map<String, IssuesBySeverity>> newIssuesArgument;
 
+  @Captor
+  ArgumentCaptor<Map<String, IssuesBySeverity>> changedIssuesArgument;
+
   @Test
   public void should_send_notif_if_new_issues() throws Exception {
     when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
@@ -74,10 +79,30 @@ public class SendIssueNotificationsPostJobTest {
     SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
     job.executeOn(project, sensorContext);
 
-    verify(notifications).sendNewIssues(eq(project), newIssuesArgument.capture());
+    verify(notifications).sendIssues(eq(project), newIssuesArgument.capture(), eq(NOTIFICATION_TYPE_NEW));
     assertThat(newIssuesArgument.getValue().size()).isEqualTo(2);
-    for (Object issues : newIssuesArgument.getValue().values()) {
-      assertThat(((IssuesBySeverity) issues).size()).isEqualTo(1);
+    for (IssuesBySeverity issues : newIssuesArgument.getValue().values()) {
+      assertThat(issues.size()).isEqualTo(1);
+    }
+  }
+
+  @Test
+  public void should_send_notif_if_changed_issues() throws Exception {
+    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
+    when(issueCache.all()).thenReturn(Arrays.asList(
+        new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user1").setChanged(true).setSendNotifications(true),
+        new DefaultIssue().setNew(false).setSeverity("MINOR").setAssignee("user1").setChanged(false).setSendNotifications(true),
+        new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user2").setChanged(true).setSendNotifications(true),
+        new DefaultIssue().setNew(true).setSeverity("MINOR").setSendNotifications(true)
+    ));
+
+    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
+    job.executeOn(project, sensorContext);
+
+    verify(notifications).sendIssues(eq(project), changedIssuesArgument.capture(), eq(NOTIFICATION_TYPE_CHANGED));
+    assertThat(changedIssuesArgument.getValue().size()).isEqualTo(2);
+    for (IssuesBySeverity issues : changedIssuesArgument.getValue().values()) {
+      assertThat(issues.size()).isEqualTo(1);
     }
   }
 
@@ -85,8 +110,8 @@ public class SendIssueNotificationsPostJobTest {
   public void should_not_send_notif_if_no_new_issues() throws Exception {
     when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
     when(issueCache.all()).thenReturn(Arrays.asList(
-      new DefaultIssue().setNew(false)
-      ));
+        new DefaultIssue().setNew(false)
+    ));
 
     SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
     job.executeOn(project, sensorContext);

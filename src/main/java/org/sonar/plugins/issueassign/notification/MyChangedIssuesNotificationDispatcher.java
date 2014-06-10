@@ -22,16 +22,16 @@ package org.sonar.plugins.issueassign.notification;
 import org.sonar.api.notifications.NotificationDispatcherMetadata;
 import org.sonar.api.notifications.NotificationManager;
 
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
 
 /**
- * This dispatcher means: "notify me when new issues assigned to me are introduced during project scan".
+ * This dispatcher means: "notify me when issues assigned to me are changed during project scan".
  */
-public class MyNewIssuesNotificationDispatcher extends MyIssuesNotificationDispatcher {
-  public static final String KEY = "MyNewIssues";
+public class MyChangedIssuesNotificationDispatcher extends MyIssuesNotificationDispatcher {
+  public static final String KEY = "MyChangedIssues";
 
-  public MyNewIssuesNotificationDispatcher(NotificationManager manager) {
-    super(NOTIFICATION_TYPE_NEW, manager);
+  public MyChangedIssuesNotificationDispatcher(NotificationManager manager) {
+    super(NOTIFICATION_TYPE_CHANGED, manager);
   }
 
   @Override

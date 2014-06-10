@@ -21,6 +21,8 @@ package org.sonar.plugins.issueassign;
 
 import org.junit.Test;
 import org.sonar.plugins.issueassign.notification.IssueNotifications;
+import org.sonar.plugins.issueassign.notification.MyChangedIssuesEmailTemplate;
+import org.sonar.plugins.issueassign.notification.MyChangedIssuesNotificationDispatcher;
 import org.sonar.plugins.issueassign.notification.MyNewIssuesEmailTemplate;
 import org.sonar.plugins.issueassign.notification.MyNewIssuesNotificationDispatcher;
 import org.sonar.plugins.issueassign.notification.SendIssueNotificationsPostJob;
@@ -33,10 +35,12 @@ public class IssueAssignPluginTest {
   public void testGetExtensions() throws Exception {
     final IssueAssignPlugin classUnderTest = new IssueAssignPlugin();
     assertThat(classUnderTest.getExtensions())
-        .hasSize(5)
+        .hasSize(8)
         .contains(IssueAssigner.class,
             SendIssueNotificationsPostJob.class,
             MyNewIssuesEmailTemplate.class,
-            MyNewIssuesNotificationDispatcher.class);
+            MyNewIssuesNotificationDispatcher.class,
+            MyChangedIssuesEmailTemplate.class,
+            MyChangedIssuesNotificationDispatcher.class);
   }
 }

@@ -32,8 +32,11 @@ import org.sonar.core.issue.IssuesBySeverity;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+
 /**
- * Creates a "my-new-issues" notification for new issues assigned to a developer.
+ * Creates a "my-new-issues" notification for new issues assigned to a developer, and a "my-changed-issues" notificationper assignee for changed issues.
  */
 public class SendIssueNotificationsPostJob implements PostJob {
 
@@ -41,7 +44,7 @@ public class SendIssueNotificationsPostJob implements PostJob {
   private final IssueCache issueCache;
   private final IssueNotifications notifications;
 
-  public SendIssueNotificationsPostJob(IssueCache issueCache, IssueNotifications notifications) {
+  protected SendIssueNotificationsPostJob(IssueCache issueCache, IssueNotifications notifications) {
     this.issueCache = issueCache;
     this.notifications = notifications;
   }
@@ -59,6 +62,7 @@ public class SendIssueNotificationsPostJob implements PostJob {
   private void sendNotifications(Project project) {
     logger.debug("Generating notifications for {}", project.getName());
     Map<String, IssuesBySeverity> newIssuesByAssignee = new HashMap<String, IssuesBySeverity>();
+    Map<String, IssuesBySeverity> changedIssuesByAssignee = new HashMap<String, IssuesBySeverity>();
     for (DefaultIssue issue : issueCache.all()) {
       String assignee = issue.assignee();
       if (assignee == null) {
@@ -71,11 +75,24 @@ public class SendIssueNotificationsPostJob implements PostJob {
           newIssuesByAssignee.put(assignee, newIssuesBySeverity);
         }
         newIssuesBySeverity.add(issue);
+      } else if (!issue.isNew() && issue.isChanged() && issue.mustSendNotifications()) {
+        IssuesBySeverity changedIssuesBySeverity = changedIssuesByAssignee.get(assignee);
+        if (changedIssuesBySeverity == null) {
+          changedIssuesBySeverity = new IssuesBySeverity();
+          changedIssuesByAssignee.put(assignee, changedIssuesBySeverity);
+        }
+        changedIssuesBySeverity.add(issue);
       }
     }
+
     logger.debug("Generating {} notifications for new issues.", newIssuesByAssignee.size());
     if (!newIssuesByAssignee.isEmpty()) {
-      notifications.sendNewIssues(project, newIssuesByAssignee);
+      notifications.sendIssues(project, newIssuesByAssignee, NOTIFICATION_TYPE_NEW);
+    }
+
+    logger.debug("Generating {} notifications for changed issues.", changedIssuesByAssignee.size());
+    if (!changedIssuesByAssignee.isEmpty()) {
+      notifications.sendIssues(project, changedIssuesByAssignee, NOTIFICATION_TYPE_CHANGED);
     }
   }
 

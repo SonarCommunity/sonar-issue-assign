@@ -21,36 +21,35 @@ package org.sonar.plugins.issueassign.notification;
 
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.i18n.I18n;
-import org.sonar.api.utils.DateUtils;
 
 import java.util.Date;
 
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
 import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
 
 /**
- * Creates email message for notification "my-new-issues".
+ * Creates email message for notification "my-changed-issues".
  */
-public class MyNewIssuesEmailTemplate extends MyIssuesEmailTemplate {
+public class MyChangedIssuesEmailTemplate extends MyIssuesEmailTemplate {
 
-  public MyNewIssuesEmailTemplate(EmailSettings settings, I18n i18n) {
+  public MyChangedIssuesEmailTemplate(EmailSettings settings, I18n i18n) {
     super(settings, i18n);
   }
 
   @Override
   protected String getNotificationName() {
-    return "new issues";
+    return "changed issues";
   }
 
   @Override
   protected String getNotificationType() {
-    return NOTIFICATION_TYPE_NEW;
+    return NOTIFICATION_TYPE_CHANGED;
   }
 
   @Override
   protected String generateUrl(String projectKey, String assignee, Date date) {
-    return String.format("%s/issues/search#componentRoots=%s|createdAt=%s|assignees=%s",
-        getServerBaseURL(), urlEncode(projectKey), urlEncode(DateUtils.formatDateTime(date)), urlEncode(assignee));
+    return String.format("%s/issues/search#componentRoots=%s|assignees=%s|sort=UPDATE_DATE|asc=false",
+        getServerBaseURL(), urlEncode(projectKey), urlEncode(assignee));
   }
 
 }

@@ -31,8 +31,6 @@ import org.sonar.core.issue.IssuesBySeverity;
 
 import java.util.Map;
 
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
-
 /**
  * Send notifications related to issues.
  */
@@ -46,12 +44,12 @@ public class IssueNotifications {
     this.notificationsManager = notificationsManager;
   }
 
-  public void sendNewIssues(Project project, Map<String, IssuesBySeverity> newIssuesByAssignee) {
+  public void sendIssues(Project project, Map<String, IssuesBySeverity> newIssuesByAssignee, String notificationType) {
     for (Map.Entry<String, IssuesBySeverity> entry : newIssuesByAssignee.entrySet()) {
       String assignee = entry.getKey();
       IssuesBySeverity newIssues = entry.getValue();
       logger.debug("Generating notification to {}.", assignee);
-      Notification notification = newNotification(project, NOTIFICATION_TYPE_NEW)
+      Notification notification = newNotification(project, notificationType)
           .setDefaultMessage(newIssues.size() + " new issues on " + project.getLongName() + ".\n")
           .setFieldValue("projectDate", DateUtils.formatDateTime(project.getAnalysisDate()))
           .setFieldValue("count", String.valueOf(newIssues.size()))

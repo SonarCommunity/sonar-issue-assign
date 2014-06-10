@@ -24,6 +24,8 @@ import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.plugins.issueassign.notification.IssueNotifications;
+import org.sonar.plugins.issueassign.notification.MyChangedIssuesEmailTemplate;
+import org.sonar.plugins.issueassign.notification.MyChangedIssuesNotificationDispatcher;
 import org.sonar.plugins.issueassign.notification.MyNewIssuesEmailTemplate;
 import org.sonar.plugins.issueassign.notification.MyNewIssuesNotificationDispatcher;
 import org.sonar.plugins.issueassign.notification.SendIssueNotificationsPostJob;
@@ -83,18 +85,22 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_OVERRIDE_ASSIGNEE = "override.assignee";
   public static final String PROPERTY_ENABLED = "issueassignplugin.enabled";
   public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
+  public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
   public static final String PROPERTY_DEFECT_INTRODUCED_DATE = "defect.introduced";
   public static final String PROPERTY_EMAIL_START_CHAR = "email.start.char";
   public static final String PROPERTY_EMAIL_END_CHAR = "email.end.char";
   public static final String PROPERTY_ASSIGN_TO_AUTHOR = "assign.to.last.committer";
 
-  public List getExtensions() {
+  public List<Object> getExtensions() {
     return Arrays.asList(
         IssueAssigner.class,
         SendIssueNotificationsPostJob.class,
         MyNewIssuesEmailTemplate.class,
         MyNewIssuesNotificationDispatcher.class,
-        MyNewIssuesNotificationDispatcher.newMetadata()
+        MyNewIssuesNotificationDispatcher.newMetadata(),
+        MyChangedIssuesEmailTemplate.class,
+        MyChangedIssuesNotificationDispatcher.class,
+        MyChangedIssuesNotificationDispatcher.newMetadata()
     );
   }
 }
