@@ -36,7 +36,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class MyNewIssuesNotificationDispatcherTest {
+public class MyIssuesNotificationDispatcherTest {
+
+  public static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
 
   @Mock
   private NotificationManager notifications;
@@ -50,17 +52,25 @@ public class MyNewIssuesNotificationDispatcherTest {
   @Mock
   private NotificationChannel twitterChannel;
 
-  private MyNewIssuesNotificationDispatcher dispatcher;
+  private MyIssuesNotificationDispatcher dispatcher;
 
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
-    dispatcher = new MyNewIssuesNotificationDispatcher(notifications);
+    dispatcher = new MyIssuesNotificationDispatcher(NOTIFICATION_TYPE, notifications);
   }
 
   @Test
   public void shouldNotDispatchIfNotNewViolationsNotification() throws Exception {
     Notification notification = new Notification("other-notif");
+    dispatcher.performDispatch(notification, context);
+
+    verify(context, never()).addUser(any(String.class), any(NotificationChannel.class));
+  }
+
+  @Test
+  public void shouldNotDispatchIfNoAssignee() throws Exception {
+    Notification notification = new Notification(NOTIFICATION_TYPE).setFieldValue("projectKey", "struts");
     dispatcher.performDispatch(notification, context);
 
     verify(context, never()).addUser(any(String.class), any(NotificationChannel.class));
@@ -73,7 +83,7 @@ public class MyNewIssuesNotificationDispatcherTest {
     recipients.put("user2", twitterChannel);
     when(notifications.findNotificationSubscribers(dispatcher, "struts")).thenReturn(recipients);
 
-    Notification notification = new Notification("my-new-issues").setFieldValue("projectKey", "struts").setFieldValue("assignee", "user1");
+    Notification notification = new Notification(NOTIFICATION_TYPE).setFieldValue("projectKey", "struts").setFieldValue("assignee", "user1");
     dispatcher.performDispatch(notification, context);
 
     verify(context).addUser("user1", emailChannel);

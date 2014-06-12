@@ -26,24 +26,18 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.i18n.I18n;
-import org.sonar.api.notifications.Notification;
 import org.sonar.api.utils.DateUtils;
-import org.sonar.plugins.emailnotifications.api.EmailMessage;
 
 import java.util.Date;
-import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MyNewIssuesEmailTemplateTest {
+public class MyChangedIssuesEmailTemplateTest {
 
-  MyNewIssuesEmailTemplate template;
+  MyChangedIssuesEmailTemplate template;
 
   @Mock
   I18n i18n;
@@ -52,27 +46,26 @@ public class MyNewIssuesEmailTemplateTest {
   public void setUp() {
     EmailSettings settings = mock(EmailSettings.class);
     when(settings.getServerBaseURL()).thenReturn("http://nemo.sonarsource.org");
-    template = new MyNewIssuesEmailTemplate(settings, i18n);
+    template = new MyChangedIssuesEmailTemplate(settings, i18n);
   }
 
   @Test
   public void hasCorrectNotificationName() {
     String notificationName = template.getNotificationName();
-    assertThat(notificationName).isEqualTo("new issues");
+    assertThat(notificationName).isEqualTo("changed issues");
   }
 
   @Test
   public void hasCorrectNotificationType() {
     String notificationType = template.getNotificationType();
-    assertThat(notificationType).isEqualTo("my-new-issues");
+    assertThat(notificationType).isEqualTo("my-changed-issues");
   }
 
   @Test
   public void hasCorrectUrl() {
     Date date = DateUtils.parseDateTime("2010-05-18T14:50:45+0000");
     String url = template.generateUrl("org.apache:struts", "user1", date);
-    assertThat(url).startsWith("http://nemo.sonarsource.org/issues/search#componentRoots=org.apache%3Astruts|createdAt=2010-05-1");
-    assertThat(url).endsWith("|assignees=user1");
+    assertThat(url).isEqualTo("http://nemo.sonarsource.org/issues/search#componentRoots=org.apache%3Astruts|assignees=user1|sort=UPDATE_DATE|asc=false");
   }
 
 }
