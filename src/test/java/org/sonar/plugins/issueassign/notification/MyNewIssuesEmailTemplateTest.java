@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.config.EmailSettings;
+import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.notifications.Notification;
 import org.sonar.api.utils.DateUtils;
@@ -50,9 +51,11 @@ public class MyNewIssuesEmailTemplateTest {
 
   @Before
   public void setUp() {
-    EmailSettings settings = mock(EmailSettings.class);
-    when(settings.getServerBaseURL()).thenReturn("http://nemo.sonarsource.org");
-    template = new MyNewIssuesEmailTemplate(settings, i18n);
+    Settings settings = mock(Settings.class);
+    when(settings.getString(anyString())).thenReturn(null);
+    EmailSettings emailSettings = mock(EmailSettings.class);
+    when(emailSettings.getServerBaseURL()).thenReturn("http://nemo.sonarsource.org");
+    template = new MyNewIssuesEmailTemplate(settings, emailSettings, i18n);
   }
 
   @Test

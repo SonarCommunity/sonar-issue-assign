@@ -20,12 +20,15 @@
 package org.sonar.plugins.issueassign.notification;
 
 import org.sonar.api.config.EmailSettings;
+import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.utils.DateUtils;
 
 import java.util.Date;
 
 import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT;
 import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
 
 /**
@@ -33,8 +36,8 @@ import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
  */
 public class MyNewIssuesEmailTemplate extends MyIssuesEmailTemplate {
 
-  public MyNewIssuesEmailTemplate(EmailSettings settings, I18n i18n) {
-    super(settings, i18n);
+  public MyNewIssuesEmailTemplate(Settings settings, EmailSettings emailSettings, I18n i18n) {
+    super(settings, emailSettings, i18n, PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT, PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT);
   }
 
   @Override

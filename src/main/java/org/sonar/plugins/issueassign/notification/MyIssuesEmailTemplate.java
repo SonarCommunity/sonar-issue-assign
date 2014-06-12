@@ -20,19 +20,22 @@
 package org.sonar.plugins.issueassign.notification;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.sonar.api.config.EmailSettings;
+import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.notifications.Notification;
-import org.sonar.api.platform.Server;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.plugins.emailnotifications.api.EmailMessage;
 import org.sonar.plugins.emailnotifications.api.EmailTemplate;
-import org.sonar.plugins.issueassign.util.PluginUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Parent template for my-new-issues and my-changed-issues notifications.
@@ -44,12 +47,18 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
   public static final String FIELD_PROJECT_DATE = "projectDate";
   public static final String FIELD_ASSIGNEE = "assignee";
 
-  private final EmailSettings settings;
+  private final Settings settings;
+  private final EmailSettings emailSettings;
   private final I18n i18n;
+  private final String subjectTemplateSetting;
+  private final String contentTemplateSetting;
 
-  public MyIssuesEmailTemplate(EmailSettings settings, I18n i18n) {
-    this.i18n = i18n;
+  public MyIssuesEmailTemplate(Settings settings, EmailSettings emailSettings, I18n i18n, String subjectTemplateSetting, String contentTemplateSetting) {
     this.settings = settings;
+    this.i18n = i18n;
+    this.emailSettings = emailSettings;
+    this.subjectTemplateSetting = subjectTemplateSetting;
+    this.contentTemplateSetting = contentTemplateSetting;
   }
 
   protected abstract String getNotificationName();
@@ -65,10 +74,16 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
     }
     String projectName = notification.getFieldValue(FIELD_PROJECT_NAME);
 
+    String projectKey = notification.getFieldValue(FIELD_PROJECT_KEY);
+    String dateString = notification.getFieldValue(FIELD_PROJECT_DATE);
+    String assignee = notification.getFieldValue(FIELD_ASSIGNEE);
+    if (projectKey == null || dateString == null || assignee == null) {
+      return null;
+    }
+    Date date = DateUtils.parseDateTime(dateString);
+    String url = generateUrl(projectKey, assignee, date);
+
     StringBuilder sb = new StringBuilder();
-    sb.append("Project: ").append(projectName).append("\n\n");
-    sb.append(notification.getFieldValue("count")).append(' ').append(getNotificationName()).append("\n\n");
-    sb.append("   ");
     for (Iterator<String> severityIterator = Lists.reverse(Severity.ALL).iterator(); severityIterator.hasNext(); ) {
       String severity = severityIterator.next();
       String severityLabel = i18n.message(getLocale(), "severity." + severity, severity);
@@ -77,32 +92,49 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
         sb.append("   ");
       }
     }
-    sb.append('\n');
+    String countBySeverity = sb.toString();
 
-    appendFooter(sb, notification);
+    String count = notification.getFieldValue("count");
+
+    Map<String, String> values = new HashMap<String, String>();
+    values.put("projectName", projectName);
+    values.put("date", dateString);
+    values.put("count", count);
+    values.put("countBySeverity", countBySeverity);
+    values.put("url", url);
+
+    String subject = StrSubstitutor.replace(getSubjectTemplate(), values);
+    String content = StrSubstitutor.replace(getContentTemplate(), values);
 
     return new EmailMessage()
         .setMessageId(getNotificationType() + "/" + notification.getFieldValue(FIELD_PROJECT_KEY) + "/" + notification.getFieldValue(FIELD_ASSIGNEE))
-        .setSubject(projectName + ": " + getNotificationName() + " assigned to you")
-        .setMessage(sb.toString());
-  }
-
-  private void appendFooter(StringBuilder sb, Notification notification) {
-    String projectKey = notification.getFieldValue(FIELD_PROJECT_KEY);
-    String dateString = notification.getFieldValue(FIELD_PROJECT_DATE);
-    String assignee = notification.getFieldValue(FIELD_ASSIGNEE);
-    if (projectKey != null && dateString != null) {
-      Date date = DateUtils.parseDateTime(dateString);
-      String url = generateUrl(projectKey, assignee, date);
-      sb.append("\n").append("See it in SonarQube: ").append(url).append("\n");
-    }
+        .setSubject(subject)
+        .setMessage(content);
   }
 
   protected String getServerBaseURL() {
-    return settings.getServerBaseURL();
+    return emailSettings.getServerBaseURL();
   }
 
   private Locale getLocale() {
     return Locale.ENGLISH;
+  }
+
+  protected String getSubjectTemplate() {
+    String template = settings.getString(subjectTemplateSetting);
+    if (StringUtils.isNotEmpty(template)) {
+      return template;
+    }
+    return "${projectName}: " + getNotificationName() + " assigned to you";
+  }
+  protected String getContentTemplate() {
+    String template = settings.getString(contentTemplateSetting);
+    if (StringUtils.isNotEmpty(template)) {
+      return template;
+    }
+    return "Project: ${projectName}\n\n" +
+        "${count} " + getNotificationName() + "\n\n" +
+        "   ${countBySeverity}\n\n" +
+        "See it in SonarQube: ${url}\n";
   }
 }

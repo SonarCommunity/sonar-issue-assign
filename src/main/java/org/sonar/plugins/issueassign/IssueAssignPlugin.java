@@ -77,7 +77,31 @@ import java.util.List;
         description = "Set to true if you want to always assign to the defect author, set to false if you want to assign to the last committer on the file if they are different from the author.",
         project = true,
         type = PropertyType.BOOLEAN,
-        defaultValue = "false")
+        defaultValue = "false"),
+    @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT,
+        name = "\"New Issues\" email notification subject",
+        description = "Subject for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.STRING,
+        defaultValue = ""),
+    @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT,
+        name = "\"New Issues\" email notification content",
+        description = "Content for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.TEXT,
+        defaultValue = ""),
+    @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT,
+        name = "\"Changed Issues\" email notification subject",
+        description = "Subject for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.STRING,
+        defaultValue = ""),
+    @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT,
+        name = "\"Changed Issues\" email notification content",
+        description = "Content for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.TEXT,
+        defaultValue = "")
 })
 public final class IssueAssignPlugin extends SonarPlugin {
 
@@ -90,6 +114,10 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_EMAIL_START_CHAR = "email.start.char";
   public static final String PROPERTY_EMAIL_END_CHAR = "email.end.char";
   public static final String PROPERTY_ASSIGN_TO_AUTHOR = "assign.to.last.committer";
+  public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.new.subject";
+  public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
+  public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
+  public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.changed.content";
 
   public List<Object> getExtensions() {
     return Arrays.asList(

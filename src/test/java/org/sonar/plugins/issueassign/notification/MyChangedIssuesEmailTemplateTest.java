@@ -25,12 +25,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.config.EmailSettings;
+import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.utils.DateUtils;
 
 import java.util.Date;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,9 +46,11 @@ public class MyChangedIssuesEmailTemplateTest {
 
   @Before
   public void setUp() {
-    EmailSettings settings = mock(EmailSettings.class);
-    when(settings.getServerBaseURL()).thenReturn("http://nemo.sonarsource.org");
-    template = new MyChangedIssuesEmailTemplate(settings, i18n);
+    Settings settings = mock(Settings.class);
+    when(settings.getString(anyString())).thenReturn(null);
+    EmailSettings emailSettings = mock(EmailSettings.class);
+    when(emailSettings.getServerBaseURL()).thenReturn("http://nemo.sonarsource.org");
+    template = new MyChangedIssuesEmailTemplate(settings, emailSettings, i18n);
   }
 
   @Test
