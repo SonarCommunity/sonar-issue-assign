@@ -59,12 +59,6 @@ public class MyNewIssuesEmailTemplateTest {
   }
 
   @Test
-  public void hasCorrectNotificationName() {
-    String notificationName = template.getNotificationName();
-    assertThat(notificationName).isEqualTo("new issues");
-  }
-
-  @Test
   public void hasCorrectNotificationType() {
     String notificationType = template.getNotificationType();
     assertThat(notificationType).isEqualTo("my-new-issues");

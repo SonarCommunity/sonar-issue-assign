@@ -40,11 +40,6 @@ public class MyChangedIssuesEmailTemplate extends MyIssuesEmailTemplate {
   }
 
   @Override
-  protected String getNotificationName() {
-    return "changed issues";
-  }
-
-  @Override
   protected String getNotificationType() {
     return NOTIFICATION_TYPE_CHANGED;
   }

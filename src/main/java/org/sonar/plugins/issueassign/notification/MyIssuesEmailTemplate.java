@@ -20,7 +20,6 @@
 package org.sonar.plugins.issueassign.notification;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.config.Settings;
@@ -60,8 +59,6 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
     this.subjectTemplateSetting = subjectTemplateSetting;
     this.contentTemplateSetting = contentTemplateSetting;
   }
-
-  protected abstract String getNotificationName();
 
   protected abstract String getNotificationType();
 
@@ -103,8 +100,8 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
     values.put("countBySeverity", countBySeverity);
     values.put("url", url);
 
-    String subject = StrSubstitutor.replace(getSubjectTemplate(), values);
-    String content = StrSubstitutor.replace(getContentTemplate(), values);
+    String subject = StrSubstitutor.replace(settings.getString(subjectTemplateSetting), values);
+    String content = StrSubstitutor.replace(settings.getString(contentTemplateSetting), values);
 
     return new EmailMessage()
         .setMessageId(getNotificationType() + "/" + notification.getFieldValue(FIELD_PROJECT_KEY) + "/" + notification.getFieldValue(FIELD_ASSIGNEE))
@@ -120,21 +117,4 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
     return Locale.ENGLISH;
   }
 
-  protected String getSubjectTemplate() {
-    String template = settings.getString(subjectTemplateSetting);
-    if (StringUtils.isNotEmpty(template)) {
-      return template;
-    }
-    return "${projectName}: " + getNotificationName() + " assigned to you";
-  }
-  protected String getContentTemplate() {
-    String template = settings.getString(contentTemplateSetting);
-    if (StringUtils.isNotEmpty(template)) {
-      return template;
-    }
-    return "Project: ${projectName}\n\n" +
-        "${count} " + getNotificationName() + "\n\n" +
-        "   ${countBySeverity}\n\n" +
-        "See it in SonarQube: ${url}\n";
-  }
 }

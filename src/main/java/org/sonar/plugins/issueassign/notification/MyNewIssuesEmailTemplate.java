@@ -41,11 +41,6 @@ public class MyNewIssuesEmailTemplate extends MyIssuesEmailTemplate {
   }
 
   @Override
-  protected String getNotificationName() {
-    return "new issues";
-  }
-
-  @Override
   protected String getNotificationType() {
     return NOTIFICATION_TYPE_NEW;
   }

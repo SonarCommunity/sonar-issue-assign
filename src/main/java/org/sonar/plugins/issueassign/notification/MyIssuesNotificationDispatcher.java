@@ -34,7 +34,7 @@ import java.util.Map;
  * Parent notification dispatcher for my-new-issues and my-changed-issues.
  */
 public class MyIssuesNotificationDispatcher extends NotificationDispatcher {
-  protected final NotificationManager manager;
+  private final NotificationManager manager;
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   public MyIssuesNotificationDispatcher(String notificationType, NotificationManager manager) {

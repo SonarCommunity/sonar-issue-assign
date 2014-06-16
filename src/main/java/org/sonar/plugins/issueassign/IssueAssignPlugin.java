@@ -23,7 +23,6 @@ import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.issueassign.notification.IssueNotifications;
 import org.sonar.plugins.issueassign.notification.MyChangedIssuesEmailTemplate;
 import org.sonar.plugins.issueassign.notification.MyChangedIssuesNotificationDispatcher;
 import org.sonar.plugins.issueassign.notification.MyNewIssuesEmailTemplate;
@@ -83,25 +82,31 @@ import java.util.List;
         description = "Subject for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
         project = true,
         type = PropertyType.STRING,
-        defaultValue = ""),
+        defaultValue = "${projectName}: new issues assigned to you"),
     @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT,
         name = "\"New Issues\" email notification content",
         description = "Content for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
         project = true,
         type = PropertyType.TEXT,
-        defaultValue = ""),
+        defaultValue = "Project: ${projectName}\n\n" +
+            "${count} new issues\n\n" +
+            "   ${countBySeverity}\n\n" +
+            "See it in SonarQube: ${url}\n"),
     @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT,
         name = "\"Changed Issues\" email notification subject",
         description = "Subject for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
         project = true,
         type = PropertyType.STRING,
-        defaultValue = ""),
+        defaultValue = "${projectName}: changed issues assigned to you"),
     @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT,
         name = "\"Changed Issues\" email notification content",
         description = "Content for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
         project = true,
         type = PropertyType.TEXT,
-        defaultValue = "")
+        defaultValue = "Project: ${projectName}\n\n" +
+            "${count} changed issues\n\n" +
+            "   ${countBySeverity}\n\n" +
+            "See it in SonarQube: ${url}\n")
 })
 public final class IssueAssignPlugin extends SonarPlugin {
 

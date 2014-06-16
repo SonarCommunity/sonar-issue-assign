@@ -44,7 +44,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class MyIssuesEmailTemplateTest {
 
-  private static final String NOTIFICATION_NAME = "NOTIFICATION_NAME";
   private static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
   private static final String PROPERTY_SUBJECT = "PROPERTY_SUBJECT";
   private static final String PROPERTY_CONTENT = "PROPERTY_CONTENT";
@@ -62,11 +61,6 @@ public class MyIssuesEmailTemplateTest {
     EmailSettings emailSettings = mock(EmailSettings.class);
     when(emailSettings.getServerBaseURL()).thenReturn("http://nemo.sonarsource.org");
     template = new MyIssuesEmailTemplate(settings, emailSettings, i18n, PROPERTY_SUBJECT, PROPERTY_CONTENT) {
-
-      @Override
-      protected String getNotificationName() {
-        return NOTIFICATION_NAME;
-      }
 
       @Override
       protected String getNotificationType() {
@@ -100,43 +94,6 @@ public class MyIssuesEmailTemplateTest {
    */
   @Test
   public void shouldFormatCommentAdded() {
-    Notification notification = new Notification(NOTIFICATION_TYPE)
-        .setFieldValue("count", "32")
-        .setFieldValue("count-INFO", "1")
-        .setFieldValue("count-MINOR", "3")
-        .setFieldValue("count-MAJOR", "10")
-        .setFieldValue("count-CRITICAL", "5")
-        .setFieldValue("count-BLOCKER", "0")
-        .setFieldValue("projectName", "Struts")
-        .setFieldValue("projectKey", "org.apache:struts")
-        .setFieldValue("projectDate", "2010-05-18T14:50:45+0000")
-        .setFieldValue("assignee", "user1");
-
-    when(i18n.message(any(Locale.class), eq("severity.BLOCKER"), anyString())).thenReturn("Blocker");
-    when(i18n.message(any(Locale.class), eq("severity.CRITICAL"), anyString())).thenReturn("Critical");
-    when(i18n.message(any(Locale.class), eq("severity.MAJOR"), anyString())).thenReturn("Major");
-    when(i18n.message(any(Locale.class), eq("severity.MINOR"), anyString())).thenReturn("Minor");
-    when(i18n.message(any(Locale.class), eq("severity.INFO"), anyString())).thenReturn("Info");
-    when(settings.getString(PROPERTY_SUBJECT)).thenReturn(null);
-    when(settings.getString(PROPERTY_CONTENT)).thenReturn(null);
-
-    EmailMessage message = template.format(notification);
-    assertThat(message.getMessageId()).isEqualTo(NOTIFICATION_TYPE + "/org.apache:struts/user1");
-    assertThat(message.getSubject()).isEqualTo("Struts: " + NOTIFICATION_NAME + " assigned to you");
-
-    // TODO datetime to be completed when test is isolated from JVM timezone
-    assertThat(message.getMessage()).startsWith("" +
-        "Project: Struts\n" +
-        "\n" +
-        "32 " + NOTIFICATION_NAME + "\n" +
-        "\n" +
-        "   Blocker: 0   Critical: 5   Major: 10   Minor: 3   Info: 1\n" +
-        "\n" +
-        "See it in SonarQube: NOTIFICATION_URL|org.apache:struts|user1|2010-05-1");
-  }
-
-  @Test
-  public void shouldFormatCustomTemplate() {
     Notification notification = new Notification(NOTIFICATION_TYPE)
         .setFieldValue("count", "32")
         .setFieldValue("count-INFO", "1")
