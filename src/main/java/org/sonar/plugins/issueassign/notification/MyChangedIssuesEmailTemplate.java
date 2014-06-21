@@ -1,0 +1,53 @@
+/*
+ * SonarQube Issue Assign Plugin
+ * Copyright (C) 2014 SonarSource
+ * dev@sonar.codehaus.org
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ */
+package org.sonar.plugins.issueassign.notification;
+
+import org.sonar.api.config.EmailSettings;
+import org.sonar.api.config.Settings;
+import org.sonar.api.i18n.I18n;
+
+import java.util.Date;
+
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT;
+import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
+
+/**
+ * Creates email message for notification "my-changed-issues".
+ */
+public class MyChangedIssuesEmailTemplate extends MyIssuesEmailTemplate {
+
+  public MyChangedIssuesEmailTemplate(Settings settings, EmailSettings emailSettings, I18n i18n) {
+    super(settings, emailSettings, i18n, PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT, PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT);
+  }
+
+  @Override
+  protected String getNotificationType() {
+    return NOTIFICATION_TYPE_CHANGED;
+  }
+
+  @Override
+  protected String generateUrl(String projectKey, String assignee, Date date) {
+    return String.format("%s/issues/search#componentRoots=%s|assignees=%s|sort=UPDATE_DATE|asc=false",
+        getServerBaseURL(), urlEncode(projectKey), urlEncode(assignee));
+  }
+
+}

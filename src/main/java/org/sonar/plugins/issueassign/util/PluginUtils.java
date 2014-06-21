@@ -26,6 +26,9 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.plugins.issueassign.exception.SettingNotConfiguredException;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public final class PluginUtils {
 
   private static final Logger LOG = LoggerFactory.getLogger(PluginUtils.class);
@@ -48,4 +51,16 @@ public final class PluginUtils {
     }
     return setting;
   }
+
+  /**
+   * Encode an URL to UTF-8.
+   */
+  public static String urlEncode(String toEncode) {
+    try {
+      return URLEncoder.encode(toEncode, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new IllegalStateException("Encoding not supported", e);
+    }
+  }
+
 }

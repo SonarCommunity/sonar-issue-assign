@@ -23,6 +23,11 @@ import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.plugins.issueassign.notification.MyChangedIssuesEmailTemplate;
+import org.sonar.plugins.issueassign.notification.MyChangedIssuesNotificationDispatcher;
+import org.sonar.plugins.issueassign.notification.MyNewIssuesEmailTemplate;
+import org.sonar.plugins.issueassign.notification.MyNewIssuesNotificationDispatcher;
+import org.sonar.plugins.issueassign.notification.SendIssueNotificationsPostJob;
 
 import java.util.Arrays;
 import java.util.List;
@@ -71,19 +76,64 @@ import java.util.List;
         description = "Set to true if you want to always assign to the defect author, set to false if you want to assign to the last committer on the file if they are different from the author.",
         project = true,
         type = PropertyType.BOOLEAN,
-        defaultValue = "false")
+        defaultValue = "false"),
+    @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT,
+        name = "\"New Issues\" email notification subject",
+        description = "Subject for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.STRING,
+        defaultValue = "${projectName}: new issues assigned to you"),
+    @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT,
+        name = "\"New Issues\" email notification content",
+        description = "Content for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.TEXT,
+        defaultValue = "Project: ${projectName}\n\n" +
+            "${count} new issues\n\n" +
+            "   ${countBySeverity}\n\n" +
+            "See it in SonarQube: ${url}\n"),
+    @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT,
+        name = "\"Changed Issues\" email notification subject",
+        description = "Subject for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.STRING,
+        defaultValue = "${projectName}: changed issues assigned to you"),
+    @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT,
+        name = "\"Changed Issues\" email notification content",
+        description = "Content for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
+        project = true,
+        type = PropertyType.TEXT,
+        defaultValue = "Project: ${projectName}\n\n" +
+            "${count} changed issues\n\n" +
+            "   ${countBySeverity}\n\n" +
+            "See it in SonarQube: ${url}\n")
 })
 public final class IssueAssignPlugin extends SonarPlugin {
 
   public static final String PROPERTY_DEFAULT_ASSIGNEE = "default.assignee";
   public static final String PROPERTY_OVERRIDE_ASSIGNEE = "override.assignee";
   public static final String PROPERTY_ENABLED = "issueassignplugin.enabled";
+  public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
+  public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
   public static final String PROPERTY_DEFECT_INTRODUCED_DATE = "defect.introduced";
   public static final String PROPERTY_EMAIL_START_CHAR = "email.start.char";
   public static final String PROPERTY_EMAIL_END_CHAR = "email.end.char";
   public static final String PROPERTY_ASSIGN_TO_AUTHOR = "assign.to.last.committer";
+  public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.new.subject";
+  public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
+  public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
+  public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.changed.content";
 
-  public List getExtensions() {
-    return Arrays.asList(IssueAssigner.class);
+  public List<Object> getExtensions() {
+    return Arrays.asList(
+        IssueAssigner.class,
+        SendIssueNotificationsPostJob.class,
+        MyNewIssuesEmailTemplate.class,
+        MyNewIssuesNotificationDispatcher.class,
+        MyNewIssuesNotificationDispatcher.newMetadata(),
+        MyChangedIssuesEmailTemplate.class,
+        MyChangedIssuesNotificationDispatcher.class,
+        MyChangedIssuesNotificationDispatcher.newMetadata()
+    );
   }
 }
