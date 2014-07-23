@@ -57,7 +57,7 @@ public class IssueAssigner implements IssueHandler {
     final Issue issue = context.issue();
     
     //Make sure the issue is only assigned if new or if it was introduced after the introduced date.
-    if (issue.isNew() || (issueAfterDefectIntroducedDate(issue) && issue.assignee() == null)) {
+    if (issue.isNew()) {
       LOG.debug("Found new issue [" + issue.key() + "]");
       try {
         this.assignIssue(context, issue);
@@ -69,35 +69,6 @@ public class IssueAssigner implements IssueHandler {
     } 
   }
   
-  private boolean issueAfterDefectIntroducedDate(final Issue issue) {
-	  
-	  boolean result = false;
-	  String defectIntroducedDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE);
-	  DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-	  Date introducedDate = null; 
-	  try {
-		  if(defectIntroducedDatePref != null) {
-			  introducedDate = df.parse(defectIntroducedDatePref);
-			  
-			  Date creationDate = issue.creationDate();
-			  Date updateDate = issue.updateDate();
-			  if(introducedDate != null) {
-				
-				  boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
-				  boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
-				  
-				  if(problemCreatedAfterIntroducedDate || problemUpdatedAfterIntroducedDate) {
-					  result = true;
-				  }
-			  }
-		  }
-	  } catch(ParseException e) {
-		LOG.error("Unable to parse date: " + defectIntroducedDatePref);  
-	  }	  
-	  
-	  return result;
-  }
-
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {
 
 	final boolean assignToAuthor = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
