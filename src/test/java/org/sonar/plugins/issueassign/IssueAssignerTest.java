@@ -77,7 +77,6 @@ public class IssueAssignerTest {
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE)).thenReturn("04/02/2014");
     when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR_WITH_EMAIL);
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)).thenReturn("<");
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)).thenReturn(">");
@@ -101,7 +100,6 @@ public class IssueAssignerTest {
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_ITRODUCED_DATE)).thenReturn("04/05/2014");
     when(issue.isNew()).thenReturn(false);
     when(issue.creationDate()).thenReturn(d);
     when(issue.updateDate()).thenReturn(d);
