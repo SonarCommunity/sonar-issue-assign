@@ -37,7 +37,7 @@ import java.util.Date;
 
 public class IssueAssigner implements IssueHandler {
 
-  static final String DEFECT_INTRODUCED_DATE_FORMAT = "dd/MM/yyyy";
+  static final String ISSUE_CUTOFF_DATE_FORMAT = "dd/MM/yyyy";
   private static final Logger LOG = LoggerFactory.getLogger(IssueAssigner.class);
   private final Settings settings;
   private final Blame blame;
@@ -56,52 +56,58 @@ public class IssueAssigner implements IssueHandler {
     }
 
     final Issue issue = context.issue();
-    
-    //Make sure the issue is only assigned if new or if it was introduced after the introduced date.
-    if (issue.isNew() || (issueAfterDefectIntroducedDate(issue) && issue.assignee() == null)) {
-      LOG.debug("Found new issue [" + issue.key() + "]");
-      try {
-        this.assignIssue(context, issue);
+    LOG.debug("Found new issue [" + issue.key() + "]");
+
+    try {
+        if (this.shouldAssign(issue)) {
+          this.assignIssue(context, issue);
+        }
       } catch (final IssueAssignPluginException pluginException) {
-        LOG.warn("Unable to assign issue [" + issue.key() + "]");
+          LOG.warn("Unable to assign issue [" + issue.key() + "]");
       } catch (final Exception e) {
-        LOG.error("Error assigning issue [" + issue.key() + "]", e);
+          LOG.error("Error assigning issue [" + issue.key() + "]", e);
       }
-    } 
+  }
+
+  private boolean shouldAssign(final Issue issue) throws IssueAssignPluginException {
+      return (issueCreatedAfterCutoffDate(issue) && issue.assignee() == null);
   }
   
-  private boolean issueAfterDefectIntroducedDate(final Issue issue) {
+  private boolean issueCreatedAfterCutoffDate(final Issue issue) throws IssueAssignPluginException {
 
       boolean result = false;
-      String defectIntroducedDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE);
-      DateFormat df = new SimpleDateFormat(DEFECT_INTRODUCED_DATE_FORMAT);
-      Date introducedDate;
+      final String issueCutoffDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE);
+      final DateFormat df = new SimpleDateFormat(ISSUE_CUTOFF_DATE_FORMAT);
 
       try {
-          if (defectIntroducedDatePref != null) {
-              introducedDate = df.parse(defectIntroducedDatePref);
+          if (issueCutoffDatePref != null) {
+              final Date cutoffDate = df.parse(issueCutoffDatePref);
 
-              if (introducedDate != null) {
-                  result = this.createdOrUpdatedAfterIntroductionDate(issue, introducedDate);
+              if (cutoffDate != null) {
+                  LOG.debug("Issue cutoff date is {}", cutoffDate);
+                  result = this.createdAfterCutoffDate(issue, cutoffDate);
               }
           }
       } catch (ParseException e) {
-          LOG.error("Unable to parse date: " + defectIntroducedDatePref);
+          LOG.error("Unable to parse date: " + issueCutoffDatePref);
       }
 
       return result;
   }
 
-  private boolean createdOrUpdatedAfterIntroductionDate(final Issue issue, final Date introducedDate) {
-      Date creationDate = issue.creationDate();
-      Date updateDate = issue.updateDate();
-      boolean problemCreatedAfterIntroducedDate = creationDate != null && introducedDate.before(creationDate);
-      boolean problemUpdatedAfterIntroducedDate = updateDate != null && introducedDate.before(updateDate);
+  private boolean createdAfterCutoffDate(final Issue issue, final Date cutoffDate)
+      throws IssueAssignPluginException {
+      Date issueCreatedDate = this.blame.getCommitDateForIssueLine(issue);
+      boolean createdAfter =  issueCreatedDate.after(cutoffDate);
 
-      if (problemCreatedAfterIntroducedDate || problemUpdatedAfterIntroducedDate) {
-          return true;
+      if (createdAfter) {
+         LOG.debug("Issue {} created after cutoff date, will attempt to assign.", issue.key());
       }
-      return false;
+      else {
+          LOG.debug("Issue {} created before cutoff date and will not attempt to assign.", issue.key());
+      }
+
+      return createdAfter;
   }
 
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {

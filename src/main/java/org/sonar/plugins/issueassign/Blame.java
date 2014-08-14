@@ -58,6 +58,13 @@ public class Blame {
     return lastCommitterForResource;
   }
 
+  public Date getCommitDateForIssueLine(final Issue issue) throws IssueAssignPluginException {
+        final Date commitDate = getMeasuresForResource(issue.componentKey()).getLastCommitsByLine().get(issue.line());
+        LOG.debug("Commit date for issue {} is {}", issue.key(), commitDate.toString());
+
+      return commitDate;
+  }
+
   private String getLastCommitterForResource(final String resourceKey) throws IssueAssignPluginException {
     final Date lastCommitDate = this.getLastCommitDate(resourceKey);
     final List<Integer> linesFromLastCommit = this.getLinesFromLastCommit(resourceKey, lastCommitDate);

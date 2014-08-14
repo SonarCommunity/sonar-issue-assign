@@ -23,11 +23,7 @@ import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
-import org.sonar.plugins.issueassign.notification.MyChangedIssuesEmailTemplate;
-import org.sonar.plugins.issueassign.notification.MyChangedIssuesNotificationDispatcher;
-import org.sonar.plugins.issueassign.notification.MyNewIssuesEmailTemplate;
-import org.sonar.plugins.issueassign.notification.MyNewIssuesNotificationDispatcher;
-import org.sonar.plugins.issueassign.notification.SendIssueNotificationsPostJob;
+import org.sonar.plugins.issueassign.notification.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,9 +49,9 @@ import java.util.List;
         project = true,
         type = PropertyType.BOOLEAN,
         defaultValue = "false"),
-    @Property(key = IssueAssignPlugin.PROPERTY_DEFECT_INTRODUCED_DATE,
-        name = "Defect introduced date",
-        description = "Any defects introduced or updated after this date are auto assigned, and any defects before will be ignored. Use the format " + IssueAssigner.DEFECT_INTRODUCED_DATE_FORMAT,
+    @Property(key = IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE,
+        name = "Issue cutoff date",
+        description = "Any issues introduced after this date are auto assigned, and any issues before will be ignored. Use the format " + IssueAssigner.ISSUE_CUTOFF_DATE_FORMAT,
         project = true,
         type = PropertyType.STRING,
         defaultValue = ""),
@@ -115,7 +111,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_ENABLED = "issueassignplugin.enabled";
   public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
   public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
-  public static final String PROPERTY_DEFECT_INTRODUCED_DATE = "defect.introduced";
+  public static final String PROPERTY_ISSUE_CUTOFF_DATE = "issue.cutoff";
   public static final String PROPERTY_EMAIL_START_CHAR = "email.start.char";
   public static final String PROPERTY_EMAIL_END_CHAR = "email.end.char";
   public static final String PROPERTY_ASSIGN_TO_AUTHOR = "assign.to.last.committer";
