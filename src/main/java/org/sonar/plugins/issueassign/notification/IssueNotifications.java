@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.component.Component;
@@ -28,8 +30,6 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.core.issue.IssuesBySeverity;
-
-import java.util.Map;
 
 /**
  * Send notifications related to issues.
@@ -50,10 +50,10 @@ public class IssueNotifications {
       IssuesBySeverity newIssues = entry.getValue();
       logger.debug("Generating notification to {}.", assignee);
       Notification notification = newNotification(project, notificationType)
-          .setDefaultMessage(newIssues.size() + " new issues on " + project.getLongName() + ".\n")
-          .setFieldValue("projectDate", DateUtils.formatDateTime(project.getAnalysisDate()))
-          .setFieldValue("count", String.valueOf(newIssues.size()))
-          .setFieldValue("assignee", assignee);
+        .setDefaultMessage(newIssues.size() + " new issues on " + project.getLongName() + ".\n")
+        .setFieldValue("projectDate", DateUtils.formatDateTime(project.getAnalysisDate()))
+        .setFieldValue("count", String.valueOf(newIssues.size()))
+        .setFieldValue("assignee", assignee);
       for (String severity : Severity.ALL) {
         notification.setFieldValue("count-" + severity, String.valueOf(newIssues.issues(severity)));
       }
@@ -63,8 +63,8 @@ public class IssueNotifications {
 
   private Notification newNotification(Component project, String key) {
     return new Notification(key)
-        .setFieldValue("projectName", project.longName())
-        .setFieldValue("projectKey", project.key());
+      .setFieldValue("projectName", project.longName())
+      .setFieldValue("projectKey", project.key());
   }
 
 }

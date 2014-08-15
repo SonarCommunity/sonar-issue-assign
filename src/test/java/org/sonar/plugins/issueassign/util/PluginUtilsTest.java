@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.issueassign.util;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,14 +30,13 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.plugins.issueassign.exception.SettingNotConfiguredException;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class PluginUtilsTest {
 
-  @Mock private Issue issue;
-  @Mock private Settings settings;
+  @Mock
+  private Issue issue;
+  @Mock
+  private Settings settings;
 
   @Test
   public void testGetProjectKeyFromIssue() throws Exception {

@@ -19,7 +19,9 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.notifications.Notification;
@@ -27,8 +29,7 @@ import org.sonar.api.notifications.NotificationChannel;
 import org.sonar.api.notifications.NotificationDispatcher;
 import org.sonar.api.notifications.NotificationManager;
 
-import java.util.Collection;
-import java.util.Map;
+import com.google.common.collect.Multimap;
 
 /**
  * Parent notification dispatcher for my-new-issues and my-changed-issues.
@@ -44,26 +45,25 @@ public class MyIssuesNotificationDispatcher extends NotificationDispatcher {
 
   @Override
   public void dispatch(Notification notification, Context context) {
-      logger.debug("Dispatching notification {}", notification);
-      String assignee = notification.getFieldValue("assignee");
-      if (assignee == null) {
-          return;
+    logger.debug("Dispatching notification {}", notification);
+    String assignee = notification.getFieldValue("assignee");
+    if (assignee == null) {
+      return;
+    }
+
+    String projectKey = notification.getFieldValue("projectKey");
+    Multimap<String, NotificationChannel> subscribedRecipients = manager.findNotificationSubscribers(this, projectKey);
+
+    for (Map.Entry<String, Collection<NotificationChannel>> channelsByRecipients : subscribedRecipients.asMap().entrySet()) {
+      String userLogin = channelsByRecipients.getKey();
+      if (assignee.equals(userLogin)) {
+        logger.debug("Sending notification to {} with {} channels.", userLogin, channelsByRecipients.getValue().size());
+        for (NotificationChannel channel : channelsByRecipients.getValue()) {
+          logger.debug("Sending to channel {}.", channel);
+          context.addUser(userLogin, channel);
+        }
       }
-
-      String projectKey = notification.getFieldValue("projectKey");
-      Multimap<String, NotificationChannel> subscribedRecipients = manager.findNotificationSubscribers(this, projectKey);
-
-
-      for (Map.Entry<String, Collection<NotificationChannel>> channelsByRecipients : subscribedRecipients.asMap().entrySet()) {
-          String userLogin = channelsByRecipients.getKey();
-          if (assignee.equals(userLogin)) {
-              logger.debug("Sending notification to {} with {} channels.", userLogin, channelsByRecipients.getValue().size());
-              for (NotificationChannel channel : channelsByRecipients.getValue()) {
-                  logger.debug("Sending to channel {}.", channel);
-                  context.addUser(userLogin, channel);
-              }
-          }
-      }
+    }
 
   }
 }

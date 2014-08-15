@@ -19,6 +19,14 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
+import java.util.Locale;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,16 +38,6 @@ import org.sonar.api.i18n.I18n;
 import org.sonar.api.notifications.Notification;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.plugins.emailnotifications.api.EmailMessage;
-
-import java.util.Date;
-import java.util.Locale;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyIssuesEmailTemplateTest {
@@ -95,16 +93,16 @@ public class MyIssuesEmailTemplateTest {
   @Test
   public void shouldFormatCommentAdded() {
     Notification notification = new Notification(NOTIFICATION_TYPE)
-        .setFieldValue("count", "32")
-        .setFieldValue("count-INFO", "1")
-        .setFieldValue("count-MINOR", "3")
-        .setFieldValue("count-MAJOR", "10")
-        .setFieldValue("count-CRITICAL", "5")
-        .setFieldValue("count-BLOCKER", "0")
-        .setFieldValue("projectName", "Struts")
-        .setFieldValue("projectKey", "org.apache:struts")
-        .setFieldValue("projectDate", "2010-05-18T14:50:45+0000")
-        .setFieldValue("assignee", "user1");
+      .setFieldValue("count", "32")
+      .setFieldValue("count-INFO", "1")
+      .setFieldValue("count-MINOR", "3")
+      .setFieldValue("count-MAJOR", "10")
+      .setFieldValue("count-CRITICAL", "5")
+      .setFieldValue("count-BLOCKER", "0")
+      .setFieldValue("projectName", "Struts")
+      .setFieldValue("projectKey", "org.apache:struts")
+      .setFieldValue("projectDate", "2010-05-18T14:50:45+0000")
+      .setFieldValue("assignee", "user1");
 
     when(i18n.message(any(Locale.class), eq("severity.BLOCKER"), anyString())).thenReturn("Blocker");
     when(i18n.message(any(Locale.class), eq("severity.CRITICAL"), anyString())).thenReturn("Critical");
@@ -118,15 +116,16 @@ public class MyIssuesEmailTemplateTest {
     assertThat(message.getMessageId()).isEqualTo(NOTIFICATION_TYPE + "/org.apache:struts/user1");
     assertThat(message.getSubject()).isEqualTo("Struts|32");
 
-    assertThat(message.getMessage()).startsWith("Struts|32|Blocker: 0   Critical: 5   Major: 10   Minor: 3   Info: 1|2010-05-18T14:50:45+0000|NOTIFICATION_URL|org.apache:struts|user1|2010-05-1");
+    assertThat(message.getMessage()).startsWith(
+      "Struts|32|Blocker: 0   Critical: 5   Major: 10   Minor: 3   Info: 1|2010-05-18T14:50:45+0000|NOTIFICATION_URL|org.apache:struts|user1|2010-05-1");
   }
 
   @Test
   public void shouldNotAddFooterIfMissingProperties() {
     Notification notification = new Notification(NOTIFICATION_TYPE)
-        .setFieldValue("count", "32")
-        .setFieldValue("projectName", "Struts")
-        .setFieldValue("assignee", "user1");
+      .setFieldValue("count", "32")
+      .setFieldValue("projectName", "Struts")
+      .setFieldValue("assignee", "user1");
 
     EmailMessage message = template.format(notification);
     assertThat(message).isNull();

@@ -19,6 +19,14 @@
  */
 package org.sonar.plugins.issueassign.measures;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,21 +36,17 @@ import org.sonar.api.batch.DecoratorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ScmMeasuresTest {
 
-  @Mock private DecoratorContext decoratorContext;
-  @Mock private Measure authorPerLineMeasure;
-  @Mock private Measure lastCommitDateTimeByLine;
-  @Mock private Measure revisionsByLine;
+  @Mock
+  private DecoratorContext decoratorContext;
+  @Mock
+  private Measure authorPerLineMeasure;
+  @Mock
+  private Measure lastCommitDateTimeByLine;
+  @Mock
+  private Measure revisionsByLine;
 
   private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
   private static final String DATE1 = "2013-01-31T12:12:12-0800";
@@ -81,9 +85,9 @@ public class ScmMeasuresTest {
   public void testGetAuthorsByLine() throws Exception {
     Map<Integer, String> mapData = this.classUnderTest.getAuthorsByLine();
     assertThat(mapData).hasSize(3)
-        .containsKey(1).containsValue(AUTHOR1)
-        .containsKey(2).containsValue(AUTHOR2)
-        .containsKey(3).containsValue(AUTHOR3);
+      .containsKey(1).containsValue(AUTHOR1)
+      .containsKey(2).containsValue(AUTHOR2)
+      .containsKey(3).containsValue(AUTHOR3);
 
     assertThat(mapData.get(1)).isEqualTo(AUTHOR1);
     assertThat(mapData.get(2)).isEqualTo(AUTHOR2);
@@ -94,9 +98,9 @@ public class ScmMeasuresTest {
     mapData = this.classUnderTest.getAuthorsByLine();
 
     assertThat(mapData).hasSize(3)
-        .containsKey(1).containsValue(AUTHOR1)
-        .containsKey(2).containsValue(AUTHOR2)
-        .containsKey(3).containsValue(AUTHOR3);
+      .containsKey(1).containsValue(AUTHOR1)
+      .containsKey(2).containsValue(AUTHOR2)
+      .containsKey(3).containsValue(AUTHOR3);
 
     assertThat(mapData.get(1)).isEqualTo(AUTHOR1);
     assertThat(mapData.get(2)).isEqualTo(AUTHOR2);
@@ -113,9 +117,9 @@ public class ScmMeasuresTest {
     final Date date3 = dateFormat.parse(DATE3);
 
     assertThat(mapData).hasSize(3)
-        .containsKey(1).containsValue(date1)
-        .containsKey(2).containsValue(date2)
-        .containsKey(3).containsValue(date3);
+      .containsKey(1).containsValue(date1)
+      .containsKey(2).containsValue(date2)
+      .containsKey(3).containsValue(date3);
 
     assertThat(mapData.get(1)).isEqualTo(date1);
     assertThat(mapData.get(2)).isEqualTo(date2);
@@ -126,9 +130,9 @@ public class ScmMeasuresTest {
     mapData = this.classUnderTest.getLastCommitsByLine();
 
     assertThat(mapData).hasSize(3)
-        .containsKey(1).containsValue(date1)
-        .containsKey(2).containsValue(date2)
-        .containsKey(3).containsValue(date3);
+      .containsKey(1).containsValue(date1)
+      .containsKey(2).containsValue(date2)
+      .containsKey(3).containsValue(date3);
 
     assertThat(mapData.get(1)).isEqualTo(date1);
     assertThat(mapData.get(2)).isEqualTo(date2);
@@ -140,9 +144,9 @@ public class ScmMeasuresTest {
     Map<Integer, String> mapData = this.classUnderTest.getRevisionsByLine();
 
     assertThat(mapData).hasSize(3)
-        .containsKey(1).containsValue(REVISION1)
-        .containsKey(2).containsValue(REVISION2)
-        .containsKey(3).containsValue(REVISION3);
+      .containsKey(1).containsValue(REVISION1)
+      .containsKey(2).containsValue(REVISION2)
+      .containsKey(3).containsValue(REVISION3);
 
     assertThat(mapData.get(1)).isEqualTo(REVISION1);
     assertThat(mapData.get(2)).isEqualTo(REVISION2);
@@ -153,9 +157,9 @@ public class ScmMeasuresTest {
     mapData = this.classUnderTest.getRevisionsByLine();
 
     assertThat(mapData).hasSize(3)
-        .containsKey(1).containsValue(REVISION1)
-        .containsKey(2).containsValue(REVISION2)
-        .containsKey(3).containsValue(REVISION3);
+      .containsKey(1).containsValue(REVISION1)
+      .containsKey(2).containsValue(REVISION2)
+      .containsKey(3).containsValue(REVISION3);
 
     assertThat(mapData.get(1)).isEqualTo(REVISION1);
     assertThat(mapData.get(2)).isEqualTo(REVISION2);

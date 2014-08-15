@@ -19,7 +19,8 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import com.google.common.collect.Lists;
+import java.util.*;
+
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.config.Settings;
@@ -30,11 +31,7 @@ import org.sonar.api.utils.DateUtils;
 import org.sonar.plugins.emailnotifications.api.EmailMessage;
 import org.sonar.plugins.emailnotifications.api.EmailTemplate;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
+import com.google.common.collect.Lists;
 
 /**
  * Parent template for my-new-issues and my-changed-issues notifications.
@@ -81,7 +78,7 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
     String url = generateUrl(projectKey, assignee, date);
 
     StringBuilder sb = new StringBuilder();
-    for (Iterator<String> severityIterator = Lists.reverse(Severity.ALL).iterator(); severityIterator.hasNext(); ) {
+    for (Iterator<String> severityIterator = Lists.reverse(Severity.ALL).iterator(); severityIterator.hasNext();) {
       String severity = severityIterator.next();
       String severityLabel = i18n.message(getLocale(), "severity." + severity, severity);
       sb.append(severityLabel).append(": ").append(notification.getFieldValue("count-" + severity));
@@ -104,9 +101,9 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
     String content = StrSubstitutor.replace(settings.getString(contentTemplateSetting), values);
 
     return new EmailMessage()
-        .setMessageId(getNotificationType() + "/" + notification.getFieldValue(FIELD_PROJECT_KEY) + "/" + notification.getFieldValue(FIELD_ASSIGNEE))
-        .setSubject(subject)
-        .setMessage(content);
+      .setMessageId(getNotificationType() + "/" + notification.getFieldValue(FIELD_PROJECT_KEY) + "/" + notification.getFieldValue(FIELD_ASSIGNEE))
+      .setSubject(subject)
+      .setMessage(content);
   }
 
   protected String getServerBaseURL() {

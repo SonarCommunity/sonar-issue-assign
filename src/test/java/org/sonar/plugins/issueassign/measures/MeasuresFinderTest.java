@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.issueassign.measures;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,22 +32,24 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.MissingScmMeasureDataException;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class MeasuresFinderTest {
 
-  @Mock private Resource resource;
-  @Mock private SonarIndex sonarIndex;
+  @Mock
+  private Resource resource;
+  @Mock
+  private SonarIndex sonarIndex;
 
-  @Mock private Measure scmAuthorsByLineMeasure;
-  @Mock private Measure scmLastCommitDateTimesByLineMeasure;
-  @Mock private Measure scmRevisionsByLineMeasure;
+  @Mock
+  private Measure scmAuthorsByLineMeasure;
+  @Mock
+  private Measure scmLastCommitDateTimesByLineMeasure;
+  @Mock
+  private Measure scmRevisionsByLineMeasure;
 
   private static final String RESOURCE_EFFECTIVE_KEY = "RESOURCE_EFFECTIVE_KEY";
 
-  //  not 'real' data
+  // not 'real' data
   private static final String SCM_AUTHOR_BY_LINE_DATA = "SCM_AUTHOR_BY_LINE_DATA";
   private static final String SCM_LAST_COMMIT_DATA = "SCM_LAST_COMMIT_DATA";
   private static final String SCM_REVISIONS_BY_LINE_DATA = "SCM_REVISIONS_BY_LINE_DATA";

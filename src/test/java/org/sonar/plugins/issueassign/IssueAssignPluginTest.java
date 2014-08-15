@@ -19,15 +19,10 @@
  */
 package org.sonar.plugins.issueassign;
 
-import org.junit.Test;
-import org.sonar.plugins.issueassign.notification.IssueNotifications;
-import org.sonar.plugins.issueassign.notification.MyChangedIssuesEmailTemplate;
-import org.sonar.plugins.issueassign.notification.MyChangedIssuesNotificationDispatcher;
-import org.sonar.plugins.issueassign.notification.MyNewIssuesEmailTemplate;
-import org.sonar.plugins.issueassign.notification.MyNewIssuesNotificationDispatcher;
-import org.sonar.plugins.issueassign.notification.SendIssueNotificationsPostJob;
-
 import static org.fest.assertions.api.Assertions.assertThat;
+
+import org.junit.Test;
+import org.sonar.plugins.issueassign.notification.*;
 
 public class IssueAssignPluginTest {
 
@@ -35,12 +30,12 @@ public class IssueAssignPluginTest {
   public void testGetExtensions() throws Exception {
     final IssueAssignPlugin classUnderTest = new IssueAssignPlugin();
     assertThat(classUnderTest.getExtensions())
-        .hasSize(8)
-        .contains(IssueAssigner.class,
-            SendIssueNotificationsPostJob.class,
-            MyNewIssuesEmailTemplate.class,
-            MyNewIssuesNotificationDispatcher.class,
-            MyChangedIssuesEmailTemplate.class,
-            MyChangedIssuesNotificationDispatcher.class);
+      .hasSize(8)
+      .contains(IssueAssigner.class,
+              SendIssueNotificationsPostJob.class,
+              MyNewIssuesEmailTemplate.class,
+              MyNewIssuesNotificationDispatcher.class,
+              MyChangedIssuesEmailTemplate.class,
+              MyChangedIssuesNotificationDispatcher.class);
   }
 }

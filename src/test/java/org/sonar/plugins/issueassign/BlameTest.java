@@ -19,6 +19,16 @@
  */
 package org.sonar.plugins.issueassign;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,25 +41,21 @@ import org.sonar.plugins.issueassign.exception.NoUniqueAuthorForLastCommitExcept
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
 import org.sonar.plugins.issueassign.measures.ScmMeasures;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class BlameTest {
 
-  @Mock private Issue mockIssue;
-  @Mock private ScmMeasures scmMeasures;
-  @Mock private Map authorMap;
-  @Mock private ResourceFinder resourceFinder;
-  @Mock private MeasuresFinder measuresFinder;
-  @Mock private Resource resource;
+  @Mock
+  private Issue mockIssue;
+  @Mock
+  private ScmMeasures scmMeasures;
+  @Mock
+  private Map authorMap;
+  @Mock
+  private ResourceFinder resourceFinder;
+  @Mock
+  private MeasuresFinder measuresFinder;
+  @Mock
+  private Resource resource;
 
   private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
   private static final String DATE1_STRING = "2013-01-31T12:12:12-0800";

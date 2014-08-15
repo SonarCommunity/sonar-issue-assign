@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+
 import org.sonar.api.notifications.NotificationDispatcherMetadata;
 import org.sonar.api.notifications.NotificationManager;
-
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 /**
  * This dispatcher means: "notify me when new issues assigned to me are introduced during project scan".
@@ -41,8 +41,8 @@ public class MyNewIssuesNotificationDispatcher extends MyIssuesNotificationDispa
 
   public static NotificationDispatcherMetadata newMetadata() {
     return NotificationDispatcherMetadata.create(KEY)
-        .setProperty(NotificationDispatcherMetadata.GLOBAL_NOTIFICATION, String.valueOf(true))
-        .setProperty(NotificationDispatcherMetadata.PER_PROJECT_NOTIFICATION, String.valueOf(true));
+      .setProperty(NotificationDispatcherMetadata.GLOBAL_NOTIFICATION, String.valueOf(true))
+      .setProperty(NotificationDispatcherMetadata.PER_PROJECT_NOTIFICATION, String.valueOf(true));
   }
 
 }

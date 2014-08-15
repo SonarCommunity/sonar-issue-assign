@@ -1,148 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.codehaus.sonar-plugins</groupId>
-    <artifactId>parent</artifactId>
-    <version>18</version>
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.codehaus.sonar-plugins</groupId>
+        <artifactId>parent</artifactId>
+        <version>18</version>
+    </parent>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.buildVersion>4.4</sonar.buildVersion>
-    <sonar.pluginName>Issue Assign</sonar.pluginName>
-    <jdk.min.version>1.6</jdk.min.version>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonar.buildVersion>4.4</sonar.buildVersion>
+        <sonar.pluginName>Issue Assign</sonar.pluginName>
+        <jdk.min.version>1.6</jdk.min.version>
+    </properties>
 
-  <artifactId>sonar-issue-assign-plugin</artifactId>
-  <packaging>sonar-plugin</packaging>
-  <version>1.0-SNAPSHOT</version>
+    <artifactId>sonar-issue-assign-plugin</artifactId>
+    <packaging>sonar-plugin</packaging>
+    <version>1.0-SNAPSHOT</version>
 
-  <name>SonarQube Issue Assign Plugin</name>
-  <description>Assigns issues to Sonar users</description>
-  <url>http://docs.codehaus.org/display/SONAR/Issue+Assign+Plugin</url>
-  <inceptionYear>2014</inceptionYear>
+    <name>SonarQube Issue Assign Plugin</name>
+    <description>Assigns issues to Sonar users</description>
+    <url>http://docs.codehaus.org/display/SONAR/Issue+Assign+Plugin</url>
+    <inceptionYear>2014</inceptionYear>
 
-  <organization>
-    <name>SonarSource</name>
-    <url>http://www.sonarsource.com</url>
-  </organization>
-  <licenses>
-    <license>
-      <name>GNU LGPL 3</name>
-      <url>http://www.gnu.org/licenses/lgpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+    <organization>
+        <name>SonarSource</name>
+        <url>http://www.sonarsource.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU LGPL 3</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <developers>
-    <developer>
-      <name>Tim Webster</name>
-      <email>tim.webster@gmail.com</email>
-      <timezone>+0</timezone>
-    </developer>
-  </developers>
+    <developers>
+        <developer>
+            <name>Tim Webster</name>
+            <email>tim.webster@gmail.com</email>
+            <timezone>+0</timezone>
+        </developer>
+    </developers>
 
-  <scm>
-    <connection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</developerConnection>
-    <url>https://github.com/SonarCommunity/sonar-issue-assign</url>
-  </scm>
+    <scm>
+        <connection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</connection>
+        <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</developerConnection>
+        <url>https://github.com/SonarCommunity/sonar-issue-assign</url>
+    </scm>
 
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/16478</url>
-  </issueManagement>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/16478</url>
+    </issueManagement>
 
-  <ciManagement>
-    <system>Cloudbees</system>
-    <url>https://sonarplugins.ci.cloudbees.com/job/IssueAssign/</url>
-  </ciManagement>
+    <ciManagement>
+        <system>Cloudbees</system>
+        <url>https://sonarplugins.ci.cloudbees.com/job/IssueAssign/</url>
+    </ciManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-plugin-api</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-core</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-batch</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar.plugins</groupId>
-      <artifactId>sonar-email-notifications-plugin</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>provided</scope>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.sonar</groupId>
+            <artifactId>sonar-plugin-api</artifactId>
+            <version>${sonar.buildVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.sonar</groupId>
+            <artifactId>sonar-core</artifactId>
+            <version>${sonar.buildVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.sonar</groupId>
+            <artifactId>sonar-batch</artifactId>
+            <version>${sonar.buildVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.sonar.plugins</groupId>
+            <artifactId>sonar-email-notifications-plugin</artifactId>
+            <version>${sonar.buildVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.2.1</version>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.2.1</version>
+        </dependency>
 
-    <!-- unit tests -->
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-testing-harness</artifactId>
-      <version>${sonar.buildVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert-core</artifactId>
-      <version>2.0M10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.9.5</version>
-    </dependency>
-  </dependencies>
+        <!-- unit tests -->
+        <dependency>
+            <groupId>org.codehaus.sonar</groupId>
+            <artifactId>sonar-testing-harness</artifactId>
+            <version>${sonar.buildVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easytesting</groupId>
+            <artifactId>fest-assert-core</artifactId>
+            <version>2.0M10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+        </dependency>
+    </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.sonar</groupId>
-        <artifactId>sonar-packaging-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <pluginClass>org.sonar.plugins.issueassign.IssueAssignPlugin</pluginClass>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <source>${jdk.min.version}</source>
-          <target>${jdk.min.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <!-- UTF-8 bundles are not supported by Java, so they must be converted during build -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>native2ascii-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>native2ascii</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.sonar</groupId>
+                <artifactId>sonar-packaging-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <pluginClass>org.sonar.plugins.issueassign.IssueAssignPlugin</pluginClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>${jdk.min.version}</source>
+                    <target>${jdk.min.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- UTF-8 bundles are not supported by Java, so they must be converted during build -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native2ascii-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>native2ascii</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

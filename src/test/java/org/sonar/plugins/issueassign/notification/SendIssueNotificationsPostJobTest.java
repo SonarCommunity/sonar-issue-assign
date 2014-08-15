@@ -19,6 +19,15 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+
+import java.util.Arrays;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -32,17 +41,6 @@ import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.batch.issue.IssueCache;
 import org.sonar.core.issue.IssuesBySeverity;
-
-import java.util.Arrays;
-import java.util.Map;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendIssueNotificationsPostJobTest {
@@ -71,10 +69,10 @@ public class SendIssueNotificationsPostJobTest {
   public void should_send_notif_if_new_issues() throws Exception {
     when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
     when(issueCache.all()).thenReturn(Arrays.asList(
-        new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user1"),
-        new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user2"),
-        new DefaultIssue().setNew(false).setSeverity("MINOR")
-    ));
+      new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user1"),
+      new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user2"),
+      new DefaultIssue().setNew(false).setSeverity("MINOR")
+      ));
 
     SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
     job.executeOn(project, sensorContext);
@@ -90,11 +88,11 @@ public class SendIssueNotificationsPostJobTest {
   public void should_send_notif_if_changed_issues() throws Exception {
     when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
     when(issueCache.all()).thenReturn(Arrays.asList(
-        new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user1").setChanged(true).setSendNotifications(true),
-        new DefaultIssue().setNew(false).setSeverity("MINOR").setAssignee("user1").setChanged(false).setSendNotifications(true),
-        new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user2").setChanged(true).setSendNotifications(true),
-        new DefaultIssue().setNew(true).setSeverity("MINOR").setSendNotifications(true)
-    ));
+      new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user1").setChanged(true).setSendNotifications(true),
+      new DefaultIssue().setNew(false).setSeverity("MINOR").setAssignee("user1").setChanged(false).setSendNotifications(true),
+      new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user2").setChanged(true).setSendNotifications(true),
+      new DefaultIssue().setNew(true).setSeverity("MINOR").setSendNotifications(true)
+      ));
 
     SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
     job.executeOn(project, sensorContext);
@@ -110,8 +108,8 @@ public class SendIssueNotificationsPostJobTest {
   public void should_not_send_notif_if_no_new_issues() throws Exception {
     when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
     when(issueCache.all()).thenReturn(Arrays.asList(
-        new DefaultIssue().setNew(false)
-    ));
+      new DefaultIssue().setNew(false)
+      ));
 
     SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
     job.executeOn(project, sensorContext);

@@ -19,14 +19,14 @@
  */
 package org.sonar.plugins.issueassign;
 
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.resources.File;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.ResourceNotFoundException;
-
-import java.util.Collection;
 
 public class ResourceFinder {
 
@@ -40,7 +40,7 @@ public class ResourceFinder {
   public Resource find(final String componentKey) throws ResourceNotFoundException {
     final Resource resource = getResource(componentKey);
     if (resource == null) {
-        LOG.debug("Cannot lookup resource directly, searching entire index...");
+      LOG.debug("Cannot lookup resource directly, searching entire index...");
       return searchAllResources(componentKey);
     }
     return resource;

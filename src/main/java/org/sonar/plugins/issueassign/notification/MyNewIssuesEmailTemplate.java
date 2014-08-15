@@ -19,17 +19,15 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.*;
+import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
+
+import java.util.Date;
+
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.utils.DateUtils;
-
-import java.util.Date;
-
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT;
-import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
 
 /**
  * Creates email message for notification "my-new-issues".
@@ -48,7 +46,7 @@ public class MyNewIssuesEmailTemplate extends MyIssuesEmailTemplate {
   @Override
   protected String generateUrl(String projectKey, String assignee, Date date) {
     return String.format("%s/issues/search#componentRoots=%s|createdAt=%s|assignees=%s",
-        getServerBaseURL(), urlEncode(projectKey), urlEncode(DateUtils.formatDateTime(date)), urlEncode(assignee));
+      getServerBaseURL(), urlEncode(projectKey), urlEncode(DateUtils.formatDateTime(date)), urlEncode(assignee));
   }
 
 }

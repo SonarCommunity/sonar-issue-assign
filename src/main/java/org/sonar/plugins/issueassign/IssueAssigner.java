@@ -19,6 +19,11 @@
  */
 package org.sonar.plugins.issueassign;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SonarIndex;
@@ -29,11 +34,6 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class IssueAssigner implements IssueHandler {
 
@@ -59,55 +59,55 @@ public class IssueAssigner implements IssueHandler {
     LOG.debug("Found new issue [" + issue.key() + "]");
 
     try {
-        if (this.shouldAssign(issue)) {
-          this.assignIssue(context, issue);
-        }
-      } catch (final IssueAssignPluginException pluginException) {
-          LOG.warn("Unable to assign issue [" + issue.key() + "]");
-      } catch (final Exception e) {
-          LOG.error("Error assigning issue [" + issue.key() + "]", e);
+      if (this.shouldAssign(issue)) {
+        this.assignIssue(context, issue);
       }
+    } catch (final IssueAssignPluginException pluginException) {
+      LOG.warn("Unable to assign issue [" + issue.key() + "]");
+    } catch (final Exception e) {
+      LOG.error("Error assigning issue [" + issue.key() + "]", e);
+    }
   }
 
   private boolean shouldAssign(final Issue issue) throws IssueAssignPluginException {
-      return (issueCreatedAfterCutoffDate(issue) && issue.assignee() == null);
+    return (issueCreatedAfterCutoffDate(issue) && issue.assignee() == null);
   }
-  
+
   private boolean issueCreatedAfterCutoffDate(final Issue issue) throws IssueAssignPluginException {
 
-      boolean result = false;
-      final String issueCutoffDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE);
-      final DateFormat df = new SimpleDateFormat(ISSUE_CUTOFF_DATE_FORMAT);
+    boolean result = false;
+    final String issueCutoffDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE);
+    final DateFormat df = new SimpleDateFormat(ISSUE_CUTOFF_DATE_FORMAT);
 
-      try {
-          if (issueCutoffDatePref != null) {
-              final Date cutoffDate = df.parse(issueCutoffDatePref);
+    try {
+      if (issueCutoffDatePref != null) {
+        final Date cutoffDate = df.parse(issueCutoffDatePref);
 
-              if (cutoffDate != null) {
-                  LOG.debug("Issue cutoff date is {}", cutoffDate);
-                  result = this.createdAfterCutoffDate(issue, cutoffDate);
-              }
-          }
-      } catch (ParseException e) {
-          LOG.error("Unable to parse date: " + issueCutoffDatePref);
+        if (cutoffDate != null) {
+          LOG.debug("Issue cutoff date is {}", cutoffDate);
+          result = this.createdAfterCutoffDate(issue, cutoffDate);
+        }
       }
+    } catch (ParseException e) {
+      LOG.error("Unable to parse date: " + issueCutoffDatePref);
+    }
 
-      return result;
+    return result;
   }
 
   private boolean createdAfterCutoffDate(final Issue issue, final Date cutoffDate)
-      throws IssueAssignPluginException {
-      Date issueCreatedDate = this.blame.getCommitDateForIssueLine(issue);
-      boolean createdAfter =  issueCreatedDate.after(cutoffDate);
+    throws IssueAssignPluginException {
+    Date issueCreatedDate = this.blame.getCommitDateForIssueLine(issue);
+    boolean createdAfter = issueCreatedDate.after(cutoffDate);
 
-      if (createdAfter) {
-         LOG.debug("Issue {} created after cutoff date, will attempt to assign.", issue.key());
-      }
-      else {
-          LOG.debug("Issue {} created before cutoff date and will not attempt to assign.", issue.key());
-      }
+    if (createdAfter) {
+      LOG.debug("Issue {} created after cutoff date, will attempt to assign.", issue.key());
+    }
+    else {
+      LOG.debug("Issue {} created before cutoff date and will not attempt to assign.", issue.key());
+    }
 
-      return createdAfter;
+    return createdAfter;
   }
 
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {

@@ -44,7 +44,7 @@ public class MeasuresFinder {
     final String revisionsByLineMeasureData = this.getMeasureData(resource, CoreMetrics.SCM_REVISIONS_BY_LINE);
 
     return new ScmMeasures(resource.getEffectiveKey(), authorsByLineMeasureData,
-        lastCommitByLineMeasureData, revisionsByLineMeasureData);
+      lastCommitByLineMeasureData, revisionsByLineMeasureData);
   }
 
   private String getMeasureData(final Resource resource, final Metric metric) throws MissingScmMeasureDataException {

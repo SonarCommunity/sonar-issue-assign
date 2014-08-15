@@ -19,6 +19,9 @@
  */
 package org.sonar.plugins.issueassign;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,17 +31,19 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.SettingNotConfiguredException;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class AssignTest {
 
-  @Mock private Settings mockSettings;
-  @Mock private UserFinder mockUserFinder;
-  @Mock private User overrideUser;
-  @Mock private User scmAuthorUser;
-  @Mock private User defaultUser;
+  @Mock
+  private Settings mockSettings;
+  @Mock
+  private UserFinder mockUserFinder;
+  @Mock
+  private User overrideUser;
+  @Mock
+  private User scmAuthorUser;
+  @Mock
+  private User defaultUser;
 
   private static final String DEFAULT_ASSIGNEE = "defaultAssignee";
   private static final String OVERRIDE_ASSIGNEE = "overrideAssignee";
@@ -48,7 +53,7 @@ public class AssignTest {
   public void testGetAssigneeWithScmAuthorAndOverride() throws Exception {
 
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE))
-        .thenReturn(OVERRIDE_ASSIGNEE);
+      .thenReturn(OVERRIDE_ASSIGNEE);
     when(mockUserFinder.findByLogin(OVERRIDE_ASSIGNEE)).thenReturn(overrideUser);
 
     final Assign classUnderTest = new Assign(mockSettings, mockUserFinder);
@@ -59,7 +64,7 @@ public class AssignTest {
   @Test
   public void testGetAssigneeWithScmAuthorAndNoOverride() throws Exception {
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE))
-        .thenThrow(SettingNotConfiguredException.class);
+      .thenThrow(SettingNotConfiguredException.class);
     when(mockUserFinder.findByLogin(SCM_AUTHOR)).thenReturn(scmAuthorUser);
 
     final Assign classUnderTest = new Assign(mockSettings, mockUserFinder);
@@ -70,12 +75,12 @@ public class AssignTest {
   @Test
   public void testGetAssigneeWithScmAuthorNotFound() throws Exception {
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE))
-        .thenThrow(SettingNotConfiguredException.class);
+      .thenThrow(SettingNotConfiguredException.class);
     when(mockUserFinder.findByLogin(SCM_AUTHOR)).thenReturn(null);
 
     // on to the default assignee
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE))
-        .thenReturn(DEFAULT_ASSIGNEE);
+      .thenReturn(DEFAULT_ASSIGNEE);
     when(mockUserFinder.findByLogin(DEFAULT_ASSIGNEE)).thenReturn(defaultUser);
 
     final Assign classUnderTest = new Assign(mockSettings, mockUserFinder);
@@ -87,7 +92,7 @@ public class AssignTest {
   public void testGetAssigneeWithoutScmAuthorAuthorAndOverride() throws Exception {
 
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE))
-        .thenReturn(OVERRIDE_ASSIGNEE);
+      .thenReturn(OVERRIDE_ASSIGNEE);
     when(mockUserFinder.findByLogin(OVERRIDE_ASSIGNEE)).thenReturn(overrideUser);
 
     final Assign classUnderTest = new Assign(mockSettings, mockUserFinder);
@@ -98,9 +103,9 @@ public class AssignTest {
   @Test
   public void testGetAssigneeWithoutScmAuthorAndNoOverride() throws Exception {
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE))
-        .thenThrow(SettingNotConfiguredException.class);
+      .thenThrow(SettingNotConfiguredException.class);
     when(mockSettings.getString(IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE))
-        .thenReturn(DEFAULT_ASSIGNEE);
+      .thenReturn(DEFAULT_ASSIGNEE);
     when(mockUserFinder.findByLogin(DEFAULT_ASSIGNEE)).thenReturn(defaultUser);
 
     final Assign classUnderTest = new Assign(mockSettings, mockUserFinder);

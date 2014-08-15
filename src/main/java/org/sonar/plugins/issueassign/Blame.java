@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.issueassign;
 
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.issue.Issue;
@@ -29,8 +31,6 @@ import org.sonar.plugins.issueassign.exception.NoUniqueAuthorForLastCommitExcept
 import org.sonar.plugins.issueassign.exception.ResourceNotFoundException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
 import org.sonar.plugins.issueassign.measures.ScmMeasures;
-
-import java.util.*;
 
 public class Blame {
 
@@ -59,10 +59,10 @@ public class Blame {
   }
 
   public Date getCommitDateForIssueLine(final Issue issue) throws IssueAssignPluginException {
-        final Date commitDate = getMeasuresForResource(issue.componentKey()).getLastCommitsByLine().get(issue.line());
-        LOG.debug("Commit date for issue {} is {}", issue.key(), commitDate.toString());
+    final Date commitDate = getMeasuresForResource(issue.componentKey()).getLastCommitsByLine().get(issue.line());
+    LOG.debug("Commit date for issue {} is {}", issue.key(), commitDate.toString());
 
-      return commitDate;
+    return commitDate;
   }
 
   private String getLastCommitterForResource(final String resourceKey) throws IssueAssignPluginException {
@@ -113,7 +113,7 @@ public class Blame {
     final List<Integer> lines = new ArrayList<Integer>();
     final ScmMeasures scmMeasures = this.getMeasuresForResource(resourceKey);
     final Iterator<Map.Entry<Integer, Date>> lastCommitsIterator =
-        scmMeasures.getLastCommitsByLine().entrySet().iterator();
+      scmMeasures.getLastCommitsByLine().entrySet().iterator();
 
     while (lastCommitsIterator.hasNext()) {
       final Map.Entry<Integer, Date> entry = lastCommitsIterator.next();

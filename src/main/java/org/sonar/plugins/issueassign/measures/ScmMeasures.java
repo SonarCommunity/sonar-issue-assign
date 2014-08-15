@@ -19,14 +19,14 @@
  */
 package org.sonar.plugins.issueassign.measures;
 
+import java.util.Date;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.KeyValueFormat;
-
-import java.util.Date;
-import java.util.Map;
 
 public class ScmMeasures {
 
@@ -42,7 +42,7 @@ public class ScmMeasures {
   private Map<Integer, String> revisionsByLine;
 
   public ScmMeasures(final String resourceKey, final String authorsByLineMeasure,
-                     final String lastCommitsByLineMeasure, final String revisionsByLineMeasure) {
+    final String lastCommitsByLineMeasure, final String revisionsByLineMeasure) {
     this.resourceKey = resourceKey;
     this.authorsByLineMeasure = authorsByLineMeasure;
     this.lastCommitsByLineMeasure = lastCommitsByLineMeasure;
