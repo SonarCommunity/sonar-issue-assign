@@ -19,14 +19,14 @@
  */
 package org.sonar.plugins.issueassign.measures;
 
-import java.util.Date;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.KeyValueFormat;
+
+import java.util.Date;
+import java.util.Map;
 
 public class ScmMeasures {
 

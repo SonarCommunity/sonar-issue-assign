@@ -19,14 +19,6 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Date;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +30,14 @@ import org.sonar.api.i18n.I18n;
 import org.sonar.api.notifications.Notification;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.plugins.emailnotifications.api.EmailMessage;
+
+import java.util.Date;
+import java.util.Locale;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MyIssuesEmailTemplateTest {

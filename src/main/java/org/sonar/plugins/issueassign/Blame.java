@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.issue.Issue;
@@ -31,6 +29,8 @@ import org.sonar.plugins.issueassign.exception.NoUniqueAuthorForLastCommitExcept
 import org.sonar.plugins.issueassign.exception.ResourceNotFoundException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
 import org.sonar.plugins.issueassign.measures.ScmMeasures;
+
+import java.util.*;
 
 public class Blame {
 

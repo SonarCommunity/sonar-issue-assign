@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.issueassign;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.sonar.plugins.issueassign.notification.*;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 public class IssueAssignPluginTest {
 
@@ -32,10 +32,10 @@ public class IssueAssignPluginTest {
     assertThat(classUnderTest.getExtensions())
       .hasSize(8)
       .contains(IssueAssigner.class,
-              SendIssueNotificationsPostJob.class,
-              MyNewIssuesEmailTemplate.class,
-              MyNewIssuesNotificationDispatcher.class,
-              MyChangedIssuesEmailTemplate.class,
-              MyChangedIssuesNotificationDispatcher.class);
+        SendIssueNotificationsPostJob.class,
+        MyNewIssuesEmailTemplate.class,
+        MyNewIssuesNotificationDispatcher.class,
+        MyChangedIssuesEmailTemplate.class,
+        MyChangedIssuesNotificationDispatcher.class);
   }
 }

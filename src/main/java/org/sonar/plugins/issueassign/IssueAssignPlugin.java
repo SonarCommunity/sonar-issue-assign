@@ -19,14 +19,14 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.plugins.issueassign.notification.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Main plugin class

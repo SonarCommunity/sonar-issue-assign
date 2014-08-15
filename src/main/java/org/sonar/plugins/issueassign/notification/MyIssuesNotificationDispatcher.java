@@ -19,9 +19,7 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import java.util.Collection;
-import java.util.Map;
-
+import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.notifications.Notification;
@@ -29,7 +27,8 @@ import org.sonar.api.notifications.NotificationChannel;
 import org.sonar.api.notifications.NotificationDispatcher;
 import org.sonar.api.notifications.NotificationManager;
 
-import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Parent notification dispatcher for my-new-issues and my-changed-issues.

@@ -19,15 +19,15 @@
  */
 package org.sonar.plugins.issueassign.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.plugins.issueassign.exception.SettingNotConfiguredException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public final class PluginUtils {
 

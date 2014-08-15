@@ -19,14 +19,6 @@
  */
 package org.sonar.plugins.issueassign.measures;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +27,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.DecoratorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ScmMeasuresTest {

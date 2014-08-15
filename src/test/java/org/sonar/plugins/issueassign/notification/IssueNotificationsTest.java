@@ -19,13 +19,7 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
-
-import java.util.Date;
-import java.util.Map;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +32,12 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.core.issue.IssuesBySeverity;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Date;
+import java.util.Map;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueNotificationsTest {

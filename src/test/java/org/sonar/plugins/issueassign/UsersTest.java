@@ -19,13 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +28,13 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.api.user.UserQuery;
 import org.sonar.plugins.issueassign.exception.SonarUserNotFoundException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsersTest {

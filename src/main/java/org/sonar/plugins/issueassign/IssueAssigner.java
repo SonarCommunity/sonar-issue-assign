@@ -19,11 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SonarIndex;
@@ -34,6 +29,11 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class IssueAssigner implements IssueHandler {
 

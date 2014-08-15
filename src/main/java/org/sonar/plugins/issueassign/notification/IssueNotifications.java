@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.component.Component;
@@ -30,6 +28,8 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.core.issue.IssuesBySeverity;
+
+import java.util.Map;
 
 /**
  * Send notifications related to issues.

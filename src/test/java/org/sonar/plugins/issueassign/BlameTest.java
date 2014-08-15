@@ -19,16 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +30,16 @@ import org.sonar.plugins.issueassign.exception.MissingScmMeasureDataException;
 import org.sonar.plugins.issueassign.exception.NoUniqueAuthorForLastCommitException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
 import org.sonar.plugins.issueassign.measures.ScmMeasures;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlameTest {

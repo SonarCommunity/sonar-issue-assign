@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
-
 import org.sonar.api.notifications.NotificationDispatcherMetadata;
 import org.sonar.api.notifications.NotificationManager;
+
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
 
 /**
  * This dispatcher means: "notify me when issues assigned to me are changed during project scan".

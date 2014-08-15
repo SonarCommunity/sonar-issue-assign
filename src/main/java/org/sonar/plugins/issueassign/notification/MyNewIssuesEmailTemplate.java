@@ -19,15 +19,15 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.*;
-import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
-
-import java.util.Date;
-
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.i18n.I18n;
 import org.sonar.api.utils.DateUtils;
+
+import java.util.Date;
+
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.*;
+import static org.sonar.plugins.issueassign.util.PluginUtils.urlEncode;
 
 /**
  * Creates email message for notification "my-new-issues".

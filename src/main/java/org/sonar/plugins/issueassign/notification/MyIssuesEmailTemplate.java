@@ -19,8 +19,7 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import java.util.*;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.sonar.api.config.EmailSettings;
 import org.sonar.api.config.Settings;
@@ -31,7 +30,7 @@ import org.sonar.api.utils.DateUtils;
 import org.sonar.plugins.emailnotifications.api.EmailMessage;
 import org.sonar.plugins.emailnotifications.api.EmailTemplate;
 
-import com.google.common.collect.Lists;
+import java.util.*;
 
 /**
  * Parent template for my-new-issues and my-changed-issues notifications.

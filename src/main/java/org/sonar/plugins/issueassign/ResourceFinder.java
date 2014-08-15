@@ -19,14 +19,14 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.util.Collection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.resources.File;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.ResourceNotFoundException;
+
+import java.util.Collection;
 
 public class ResourceFinder {
 

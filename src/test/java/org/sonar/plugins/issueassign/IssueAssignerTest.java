@@ -19,11 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import static org.mockito.Mockito.*;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,6 +31,11 @@ import org.sonar.api.issue.IssueHandler;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAssignerTest {

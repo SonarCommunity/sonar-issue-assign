@@ -19,12 +19,6 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.PostJob;
@@ -34,6 +28,12 @@ import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
 import org.sonar.batch.issue.IssueCache;
 import org.sonar.core.issue.IssuesBySeverity;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 /**
  * Creates a "my-new-issues" notification for new issues assigned to a developer, and a "my-changed-issues" notificationper assignee for changed issues.

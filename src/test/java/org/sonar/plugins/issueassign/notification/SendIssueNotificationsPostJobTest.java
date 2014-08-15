@@ -19,15 +19,6 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
-import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
-
-import java.util.Arrays;
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -41,6 +32,15 @@ import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.batch.issue.IssueCache;
 import org.sonar.core.issue.IssuesBySeverity;
+
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
+import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendIssueNotificationsPostJobTest {

@@ -19,9 +19,8 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -31,8 +30,8 @@ import org.sonar.api.notifications.NotificationChannel;
 import org.sonar.api.notifications.NotificationDispatcher;
 import org.sonar.api.notifications.NotificationManager;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class MyIssuesNotificationDispatcherTest {
 

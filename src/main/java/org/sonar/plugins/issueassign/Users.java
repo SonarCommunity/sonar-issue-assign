@@ -19,10 +19,6 @@
  */
 package org.sonar.plugins.issueassign;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +27,10 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.api.user.UserQuery;
 import org.sonar.plugins.issueassign.exception.SonarUserNotFoundException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Users {
 

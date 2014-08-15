@@ -19,9 +19,6 @@
  */
 package org.sonar.plugins.issueassign.measures;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,6 +28,9 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.MissingScmMeasureDataException;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeasuresFinderTest {
