@@ -59,9 +59,14 @@ public class Blame {
   }
 
   public Date getCommitDateForIssueLine(final Issue issue) throws IssueAssignPluginException {
-    final Date commitDate = getMeasuresForResource(issue.componentKey()).getLastCommitsByLine().get(issue.line());
-    LOG.debug("Commit date for issue {} is {}", issue.key(), commitDate.toString());
-
+     Date commitDate = null;
+     if(issue.line()==null){
+         commitDate = getLastCommitDate(issue.componentKey());
+         LOG.debug("Commit date for issue {} (file {}) is {}", issue.key(), issue.componentKey(), commitDate.toString());
+     }else {
+         commitDate = getMeasuresForResource(issue.componentKey()).getLastCommitsByLine().get(issue.line());
+         LOG.debug("Commit date for issue {} (file {} line {}) is {}", issue.key(), issue.componentKey(),issue.line(),commitDate.toString());
+     }
     return commitDate;
   }
 
