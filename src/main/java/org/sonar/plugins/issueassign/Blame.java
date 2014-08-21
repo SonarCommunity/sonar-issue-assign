@@ -50,20 +50,20 @@ public class Blame {
     final String lastCommitterForResource = getLastCommitterForResource(issue.componentKey());
 
     if (assignToAuthor || lastCommitterForResource.equals(authorForIssueLine)) {
-      LOG.debug("Author [" + authorForIssueLine + "] is also the last committer.");
+      LOG.debug("Author {} is also the last committer.", authorForIssueLine);
       return authorForIssueLine;
     }
 
-    LOG.debug("Last committer differs from author, assigning to last committer [" + lastCommitterForResource + "]");
+    LOG.debug("Last committer differs from author, assigning to last committer {}", lastCommitterForResource);
     return lastCommitterForResource;
   }
 
-  public Date getCommitDateForIssueLine(final Issue issue) throws IssueAssignPluginException {
-     Date commitDate = null;
-     if(issue.line()==null){
+  public Date getCommitDateForIssue(final Issue issue) throws IssueAssignPluginException {
+     Date commitDate;
+     if (issue.line() == null){
          commitDate = getLastCommitDate(issue.componentKey());
          LOG.debug("Commit date for issue {} (file {}) is {}", issue.key(), issue.componentKey(), commitDate.toString());
-     }else {
+     } else {
          commitDate = getMeasuresForResource(issue.componentKey()).getLastCommitsByLine().get(issue.line());
          LOG.debug("Commit date for issue {} (file {} line {}) is {}", issue.key(), issue.componentKey(),issue.line(),commitDate.toString());
      }
@@ -90,7 +90,7 @@ public class Blame {
       }
     }
 
-    LOG.debug("Found last committer [" + author + "] for resource [" + resourceKey + "]");
+    LOG.debug("Found last committer {} for resource {}", author, resourceKey);
     return author;
   }
 

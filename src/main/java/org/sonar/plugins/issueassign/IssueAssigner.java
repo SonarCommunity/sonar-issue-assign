@@ -97,7 +97,7 @@ public class IssueAssigner implements IssueHandler {
 
   private boolean createdAfterCutoffDate(final Issue issue, final Date cutoffDate)
     throws IssueAssignPluginException {
-    Date issueCreatedDate = this.blame.getCommitDateForIssueLine(issue);
+    Date issueCreatedDate = this.blame.getCommitDateForIssue(issue);
     boolean createdAfter = issueCreatedDate.after(cutoffDate);
 
     if (createdAfter) {

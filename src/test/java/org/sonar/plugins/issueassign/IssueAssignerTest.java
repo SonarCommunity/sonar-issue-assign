@@ -92,7 +92,7 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
-    when(blame.getCommitDateForIssueLine(issue)).thenReturn(issueCreationDate);
+    when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)).thenReturn(true);
     when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR_WITH_EMAIL);
     when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)).thenReturn("<");
@@ -126,7 +126,7 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
-    when(blame.getCommitDateForIssueLine(issue)).thenReturn(issueCreationDate);
+    when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
 
     final IssueHandler classUnderTest =
       new org.sonar.plugins.issueassign.IssueAssigner(settings, userFinder, sonarIndex);
