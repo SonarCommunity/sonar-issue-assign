@@ -49,7 +49,7 @@ public class MeasuresFinder {
 
   private String getMeasureData(final Resource resource, final Metric metric) throws MissingScmMeasureDataException {
     final Measure measure = this.sonarIndex.getMeasure(resource, metric);
-    if (MeasureUtils.hasData(measure)) {
+    if (MeasureUtils.hasData(measure)) {  // NOSONAR
       LOG.debug("Found data for metric [" + metric.getKey() + "] on resource [" + resource.getKey() + "]: data: [" + measure.getData() + "]");
       return measure.getData();
     }
