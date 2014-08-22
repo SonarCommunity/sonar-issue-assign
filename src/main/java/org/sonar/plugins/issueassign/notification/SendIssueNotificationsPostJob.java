@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.issue.internal.DefaultIssue;
-import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
 import org.sonar.batch.issue.IssueCache;
 import org.sonar.core.issue.IssuesBySeverity;
@@ -40,7 +39,7 @@ import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_
  */
 public class SendIssueNotificationsPostJob implements PostJob {
 
-  private Logger logger = LoggerFactory.getLogger(getClass());
+  private static final Logger LOG = LoggerFactory.getLogger(SendIssueNotificationsPostJob.class);
   private final IssueCache issueCache;
   private final IssueNotifications notifications;
 
@@ -49,18 +48,13 @@ public class SendIssueNotificationsPostJob implements PostJob {
     this.notifications = notifications;
   }
 
-  public SendIssueNotificationsPostJob(IssueCache issueCache, NotificationManager notificationsManager) {
-    this.issueCache = issueCache;
-    this.notifications = new IssueNotifications(notificationsManager);
-  }
-
   @Override
   public void executeOn(Project project, SensorContext context) {
     sendNotifications(project);
   }
 
   private void sendNotifications(Project project) {
-    logger.debug("Generating notifications for {}", project.getName());
+    LOG.debug("Generating notifications for {}", project.getName());
     Map<String, IssuesBySeverity> newIssuesByAssignee = new HashMap<String, IssuesBySeverity>();
     Map<String, IssuesBySeverity> changedIssuesByAssignee = new HashMap<String, IssuesBySeverity>();
     for (DefaultIssue issue : issueCache.all()) {
@@ -85,12 +79,12 @@ public class SendIssueNotificationsPostJob implements PostJob {
       }
     }
 
-    logger.debug("Generating {} notifications for new issues.", newIssuesByAssignee.size());
+    LOG.debug("Generating {} notifications for new issues.", newIssuesByAssignee.size());
     if (!newIssuesByAssignee.isEmpty()) {
       notifications.sendIssues(project, newIssuesByAssignee, NOTIFICATION_TYPE_NEW);
     }
 
-    logger.debug("Generating {} notifications for changed issues.", changedIssuesByAssignee.size());
+    LOG.debug("Generating {} notifications for changed issues.", changedIssuesByAssignee.size());
     if (!changedIssuesByAssignee.isEmpty()) {
       notifications.sendIssues(project, changedIssuesByAssignee, NOTIFICATION_TYPE_CHANGED);
     }

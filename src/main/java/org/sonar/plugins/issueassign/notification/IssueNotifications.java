@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class IssueNotifications {
 
-  private Logger logger = LoggerFactory.getLogger(getClass());
+  private static final Logger LOG = LoggerFactory.getLogger(IssueNotifications.class);
 
   private final NotificationManager notificationsManager;
 
@@ -48,7 +48,7 @@ public class IssueNotifications {
     for (Map.Entry<String, IssuesBySeverity> entry : newIssuesByAssignee.entrySet()) {
       String assignee = entry.getKey();
       IssuesBySeverity newIssues = entry.getValue();
-      logger.debug("Generating notification to {}.", assignee);
+      LOG.debug("Generating notification to {}.", assignee);
       Notification notification = newNotification(project, notificationType)
         .setDefaultMessage(newIssues.size() + " new issues on " + project.getLongName() + ".\n")
         .setFieldValue("projectDate", DateUtils.formatDateTime(project.getAnalysisDate()))

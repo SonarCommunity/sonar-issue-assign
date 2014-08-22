@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class MyIssuesNotificationDispatcher extends NotificationDispatcher {
   private final NotificationManager manager;
-  private Logger logger = LoggerFactory.getLogger(getClass());
+  private static final Logger LOG = LoggerFactory.getLogger(MyIssuesNotificationDispatcher.class);
 
   public MyIssuesNotificationDispatcher(String notificationType, NotificationManager manager) {
     super(notificationType);
@@ -44,7 +44,7 @@ public class MyIssuesNotificationDispatcher extends NotificationDispatcher {
 
   @Override
   public void dispatch(Notification notification, Context context) {
-    logger.debug("Dispatching notification {}", notification);
+    LOG.debug("Dispatching notification {}", notification);
     String assignee = notification.getFieldValue("assignee");
     if (assignee == null) {
       return;
@@ -56,9 +56,9 @@ public class MyIssuesNotificationDispatcher extends NotificationDispatcher {
     for (Map.Entry<String, Collection<NotificationChannel>> channelsByRecipients : subscribedRecipients.asMap().entrySet()) {
       String userLogin = channelsByRecipients.getKey();
       if (assignee.equals(userLogin)) {
-        logger.debug("Sending notification to {} with {} channels.", userLogin, channelsByRecipients.getValue().size());
+        LOG.debug("Sending notification to {} with {} channels.", userLogin, channelsByRecipients.getValue().size());
         for (NotificationChannel channel : channelsByRecipients.getValue()) {
-          logger.debug("Sending to channel {}.", channel);
+          LOG.debug("Sending to channel {}.", channel);
           context.addUser(userLogin, channel);
         }
       }

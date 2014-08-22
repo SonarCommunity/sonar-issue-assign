@@ -70,7 +70,7 @@ public class IssueAssigner implements IssueHandler {
   }
 
   private boolean shouldAssign(final Issue issue) throws IssueAssignPluginException {
-    return (issueCreatedAfterCutoffDate(issue) && issue.assignee() == null);
+    return issueCreatedAfterCutoffDate(issue) && issue.assignee() == null;
   }
 
   private boolean issueCreatedAfterCutoffDate(final Issue issue) throws IssueAssignPluginException {
@@ -102,8 +102,7 @@ public class IssueAssigner implements IssueHandler {
 
     if (createdAfter) {
       LOG.debug("Issue {} created after cutoff date, will attempt to assign.", issue.key());
-    }
-    else {
+    } else {
       LOG.debug("Issue {} created before cutoff date and will not attempt to assign.", issue.key());
     }
 
