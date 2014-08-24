@@ -35,6 +35,7 @@ import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,6 +78,23 @@ public class IssueAssignerTest {
     // verify that assignIssue() wasn't called.
     verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
     verifyZeroInteractions(blame);
+  }
+
+  @Test
+  public void testOnIssueNotSevereEnough() throws Exception {
+      when(context.issue()).thenReturn(issue);
+      when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
+      when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
+      when(issue.severity()).thenReturn("MINOR");
+
+      final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
+      Whitebox.setInternalState(classUnderTest, "blame", blame);
+      Whitebox.setInternalState(classUnderTest, "assign", assign);
+      classUnderTest.onIssue(context);
+
+      // verify that assignIssue() wasn't called.
+      verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
+      verifyZeroInteractions(blame);
   }
 
   @Test
@@ -230,5 +248,38 @@ public class IssueAssignerTest {
     Whitebox.setInternalState(classUnderTest, "assign", assign);
 
     classUnderTest.onIssue(context);
+  }
+
+  @Test
+  public void testIsSevereEnoughEqualTo() {
+
+      when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
+      when(issue.severity()).thenReturn("MAJOR");
+
+      final IssueAssigner classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
+      final boolean result = classUnderTest.isSevereEnough(issue);
+      assertThat(result).isEqualTo(true);
+  }
+
+  @Test
+  public void testIsSevereEnoughLessThan() {
+
+    when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
+    when(issue.severity()).thenReturn("MINOR");
+
+    final IssueAssigner classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
+    final boolean result = classUnderTest.isSevereEnough(issue);
+    assertThat(result).isEqualTo(false);
+  }
+
+  @Test
+  public void testIsSevereEnoughGreaterThan() {
+
+    when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
+    when(issue.severity()).thenReturn("CRITICAL");
+
+    final IssueAssigner classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
+    final boolean result = classUnderTest.isSevereEnough(issue);
+    assertThat(result).isEqualTo(true);
   }
 }

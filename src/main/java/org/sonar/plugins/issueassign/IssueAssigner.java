@@ -25,6 +25,7 @@ import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.IssueHandler;
+import org.sonar.api.rule.Severity;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
@@ -34,6 +35,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class IssueAssigner implements IssueHandler {
 
@@ -70,7 +72,27 @@ public class IssueAssigner implements IssueHandler {
   }
 
   private boolean shouldAssign(final Issue issue) throws IssueAssignPluginException {
-    return issueCreatedAfterCutoffDate(issue) && issue.assignee() == null;
+    return issue.assignee() == null &&
+           isSevereEnough(issue) &&
+           issueCreatedAfterCutoffDate(issue);
+  }
+
+  protected boolean isSevereEnough(final Issue issue) {
+      final String configuredSeverity = this.settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY);
+      final String issueSeverity = issue.severity();
+
+      LOG.debug("Configured auto-assign severity: {}", configuredSeverity);
+      LOG.debug("Issue {} severity: {}", issue.key(), issueSeverity);
+
+      final List<String> severities = Severity.ALL;
+
+      final int configuredSeverityIndex = severities.indexOf(configuredSeverity);
+      final int issueSeverityIndex = severities.indexOf(issueSeverity);
+      final boolean isSevereEnough = issueSeverityIndex >= configuredSeverityIndex;
+
+      LOG.debug("Issue {} severe enough to auto-assign: {}", issue.key(), isSevereEnough);
+
+      return isSevereEnough;
   }
 
   private boolean issueCreatedAfterCutoffDate(final Issue issue) throws IssueAssignPluginException {

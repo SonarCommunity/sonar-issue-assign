@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.issue.internal.DefaultIssue;
+import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
 import org.sonar.batch.issue.IssueCache;
 import org.sonar.core.issue.IssuesBySeverity;
@@ -48,6 +49,11 @@ public class SendIssueNotificationsPostJob implements PostJob {
     this.notifications = notifications;
   }
 
+  public SendIssueNotificationsPostJob(IssueCache issueCache, NotificationManager notificationsManager) {
+    this.issueCache = issueCache;
+    this.notifications = new IssueNotifications(notificationsManager);
+  }
+    
   @Override
   public void executeOn(Project project, SensorContext context) {
     sendNotifications(project);

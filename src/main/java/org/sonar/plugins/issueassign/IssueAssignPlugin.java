@@ -32,12 +32,13 @@ import java.util.List;
  * Main plugin class
  */
 @Properties({
-  @Property(key = IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE,
-    name = "Default Assignee",
-    description = "Sonar user to whom issues will be assigned if the original " +
-      "SCM author is not available in SonarQube.",
+  @Property(key = IssueAssignPlugin.PROPERTY_SEVERITY,
+    name = "Severity",
+    description = "Only auto-assign issues with a severity equal to or greater than the selected value.",
     project = true,
-    type = PropertyType.STRING),
+    type = PropertyType.SINGLE_SELECT_LIST,
+    options = {"INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"},
+    defaultValue = "INFO"),
   @Property(key = IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE,
     name = "Override Assignee",
     description = "Sonar user to whom all issues will be assigned, if configured.",
@@ -120,6 +121,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.changed.content";
+  public static final String PROPERTY_SEVERITY = "sonar.issueassign.severity";
 
   public List<Object> getExtensions() {
     return Arrays.asList(
