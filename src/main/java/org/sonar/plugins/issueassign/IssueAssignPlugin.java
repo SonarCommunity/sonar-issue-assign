@@ -19,120 +19,193 @@
  */
 package org.sonar.plugins.issueassign;
 
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.resources.Qualifiers;
+import org.sonar.api.rule.Severity;
 import org.sonar.plugins.issueassign.notification.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Main plugin class
  */
-@Properties({
-  @Property(key = IssueAssignPlugin.PROPERTY_SEVERITY,
-    name = "Severity",
-    description = "Only auto-assign issues with a severity equal to or greater than the selected value.",
-    project = true,
-    type = PropertyType.SINGLE_SELECT_LIST,
-    options = {"INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"},
-    defaultValue = "INFO"),
-  @Property(key = IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE,
-    name = "Override Assignee",
-    description = "Sonar user to whom all issues will be assigned, if configured.",
-    project = true,
-    type = PropertyType.STRING),
-  @Property(key = IssueAssignPlugin.PROPERTY_ENABLED,
-    name = "Enabled",
-    description = "Enable or disable the Issue Assign plugin.",
-    project = true,
-    type = PropertyType.BOOLEAN,
-    defaultValue = "false"),
-  @Property(key = IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE,
-    name = "Issue cutoff date",
-    description = "Any issues introduced after this date are auto assigned, and any issues before will be ignored. Use the format " + IssueAssigner.ISSUE_CUTOFF_DATE_FORMAT,
-    project = true,
-    type = PropertyType.STRING,
-    defaultValue = ""),
-  @Property(key = IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR,
-    name = "SCM Author email start character",
-    description = "Use to identify an email address embedded into an SCM username.  For example, a Git username such as: GitUser&lt;gituser@domain.com&gt;.",
-    project = true,
-    type = PropertyType.STRING,
-    defaultValue = ""),
-  @Property(key = IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR,
-    name = "SCM Author email end character",
-    description = "Use to identify an email address embedded into an SCM username.  For example, a Git username such as: GitUser&lt;gituser@domain.com&gt;.",
-    project = true,
-    type = PropertyType.STRING,
-    defaultValue = ""),
-  @Property(
-    key = IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR,
-    name = "Always assign to Author",
-    description = "Set to true if you want to always assign to the defect author, set to false if you want to assign to the last committer on the file if they are different from the author.",
-    project = true,
-    type = PropertyType.BOOLEAN,
-    defaultValue = "false"),
-  @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT,
-    name = "\"New Issues\" email notification subject",
-    description = "Subject for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
-    project = true,
-    type = PropertyType.STRING,
-    defaultValue = "${projectName}: new issues assigned to you"),
-  @Property(key = IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT,
-    name = "\"New Issues\" email notification content",
-    description = "Content for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
-    project = true,
-    type = PropertyType.TEXT,
-    defaultValue = "Project: ${projectName}\n\n" +
-      "${count} new issues\n\n" +
-      "   ${countBySeverity}\n\n" +
-      "See it in SonarQube: ${url}\n"),
-  @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT,
-    name = "\"Changed Issues\" email notification subject",
-    description = "Subject for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
-    project = true,
-    type = PropertyType.STRING,
-    defaultValue = "${projectName}: changed issues assigned to you"),
-  @Property(key = IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT,
-    name = "\"Changed Issues\" email notification content",
-    description = "Content for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}",
-    project = true,
-    type = PropertyType.TEXT,
-    defaultValue = "Project: ${projectName}\n\n" +
-      "${count} changed issues\n\n" +
-      "   ${countBySeverity}\n\n" +
-      "See it in SonarQube: ${url}\n")
-})
 public final class IssueAssignPlugin extends SonarPlugin {
 
-  public static final String PROPERTY_DEFAULT_ASSIGNEE = "default.assignee";
-  public static final String PROPERTY_OVERRIDE_ASSIGNEE = "override.assignee";
-  public static final String PROPERTY_ENABLED = "issueassignplugin.enabled";
-  public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
-  public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
-  public static final String PROPERTY_ISSUE_CUTOFF_DATE = "issue.cutoff";
-  public static final String PROPERTY_EMAIL_START_CHAR = "email.start.char";
-  public static final String PROPERTY_EMAIL_END_CHAR = "email.end.char";
-  public static final String PROPERTY_ASSIGN_TO_AUTHOR = "assign.to.last.committer";
+  public static final String PROPERTY_DEFAULT_ASSIGNEE = "sonar.issueassign.default.assignee";
+  public static final String PROPERTY_OVERRIDE_ASSIGNEE = "sonar.issueassign.override.assignee";
+  public static final String PROPERTY_ENABLED = "sonar.issueassign.enabled";
+  public static final String PROPERTY_ISSUE_CUTOFF_DATE = "sonar.issueassign.issue.cutoff";
+  public static final String PROPERTY_EMAIL_START_CHAR = "sonar.issueassign.email.start.char";
+  public static final String PROPERTY_EMAIL_END_CHAR = "sonar.issueassign.email.end.char";
+  public static final String PROPERTY_ASSIGN_TO_AUTHOR = "sonar.issueassign.assign.to.last.committer";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.new.subject";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.changed.content";
   public static final String PROPERTY_SEVERITY = "sonar.issueassign.severity";
 
-  public List<Object> getExtensions() {
-    return Arrays.asList(
-      IssueAssigner.class,
-      SendIssueNotificationsPostJob.class,
-      MyNewIssuesEmailTemplate.class,
-      MyNewIssuesNotificationDispatcher.class,
-      MyNewIssuesNotificationDispatcher.newMetadata(),
-      MyChangedIssuesEmailTemplate.class,
-      MyChangedIssuesNotificationDispatcher.class,
-      MyChangedIssuesNotificationDispatcher.newMetadata()
+  public static final String CONFIGURATION_CATEGORY = "Issue Assign";
+  public static final String CONFIGURATION_SUBCATEGORY_WHEN = "when";
+  public static final String CONFIGURATION_SUBCATEGORY_NOTIFY = "notify";
+  public static final String CONFIGURATION_SUBCATEGORY_WHO = "who";
+
+  public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
+  public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
+
+  public static List<PropertyDefinition> getNotificationProperties() {
+    return ImmutableList
+      .of(
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT)
+          .name("\"New Issues\" email notification subject")
+          .description("Subject for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_NOTIFY)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.STRING)
+          .defaultValue("${projectName}: new issues assigned to you")
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT)
+          .name("\"New Issues\" email notification content")
+          .description("Content for the \"New Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_NOTIFY)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.TEXT)
+          .defaultValue("Project: ${projectName}\n\n" +
+            "${count} new issues\n\n" +
+            "   ${countBySeverity}\n\n" +
+            "See it in SonarQube: ${url}\n")
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT)
+          .name("\"Changed Issues\" email notification subject")
+          .description("Subject for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_NOTIFY)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.STRING)
+          .defaultValue("${projectName}: changed issues assigned to you")
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT)
+          .name("\"Changed Issues\" email notification content")
+          .description("Content for the \"Changed Issues\" notification email. Available variables: ${projectName}, ${date}, ${count}, ${countBySeverity}, ${url}")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_NOTIFY)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.TEXT)
+          .defaultValue("Project: ${projectName}\n\n" +
+            "${count} changed issues\n\n" +
+            "   ${countBySeverity}\n\n" +
+            "See it in SonarQube: ${url}\n")
+          .build());
+  }
+
+  public static List<PropertyDefinition> getWhenProperties() {
+    return ImmutableList
+      .of(PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_SEVERITY)
+        .name("Severity")
+        .description("Only auto-assign issues with a severity equal to or greater than the selected value.")
+        .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+        .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
+        .onQualifiers(Qualifiers.PROJECT)
+        .type(PropertyType.SINGLE_SELECT_LIST)
+        .options(Severity.ALL)
+        .defaultValue(Severity.INFO.toString())
+        .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ENABLED)
+          .name("Enabled")
+          .description("Enable or disable the Issue Assign plugin.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.BOOLEAN)
+          .defaultValue("false")
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)
+          .name("Issue cutoff date")
+          .description("Only auto-assign issues introduced after this date.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.STRING)
+          .defaultValue("")
+          .build());
+  }
+
+  public static List<PropertyDefinition> getWhoProperties() {
+    return ImmutableList
+      .of(
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_OVERRIDE_ASSIGNEE)
+          .name("Override Assignee")
+          .description("Sonar user to whom all issues will be assigned, if configured.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+          .build(),
+
+        PropertyDefinition
+          .builder(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)
+          .name("Always assign to Author")
+          .description(
+                  "Set to true if you want to always assign to the defect author, set to false if you want to assign to the last committer on the file if they are different from the author.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.BOOLEAN)
+          .defaultValue("false")
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE)
+          .name("Default Assignee")
+          .description("Sonar user to whom issues will be assigned if the original SCM author is not available in SonarQube.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)
+          .name("SCM Author email start character")
+          .description("Use to identify an email address embedded into an SCM username.  For example, a Git username such as: GitUser&lt;gituser@domain.com&gt;.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.STRING)
+          .defaultValue("")
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)
+          .name("SCM Author email end character")
+          .description("Use to identify an email address embedded into an SCM username.  For example, a Git username such as: GitUser&lt;gituser@domain.com&gt;.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.STRING)
+          .defaultValue("")
+          .build()
       );
+  }
+
+  public List<Object> getExtensions() {
+    List<Object> extensions = new ArrayList<Object>();
+    extensions.add(IssueAssigner.class);
+    extensions.add(SendIssueNotificationsPostJob.class);
+    extensions.add(MyNewIssuesEmailTemplate.class);
+    extensions.add(MyNewIssuesNotificationDispatcher.class);
+    extensions.add(MyNewIssuesNotificationDispatcher.newMetadata());
+    extensions.add(MyChangedIssuesEmailTemplate.class);
+    extensions.add(MyChangedIssuesNotificationDispatcher.class);
+    extensions.add(MyChangedIssuesNotificationDispatcher.newMetadata());
+    extensions.addAll(IssueAssignPlugin.getWhoProperties());
+    extensions.addAll(IssueAssignPlugin.getWhenProperties());
+    extensions.addAll(IssueAssignPlugin.getNotificationProperties());
+    return extensions;
   }
 }
