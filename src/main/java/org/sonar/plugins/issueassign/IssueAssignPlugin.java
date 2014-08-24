@@ -131,7 +131,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)
           .name("Issue cutoff date")
-          .description("Only auto-assign issues introduced after this date.")
+          .description("Only auto-assign issues introduced after this date. Use the format " + IssueAssigner.ISSUE_CUTOFF_DATE_FORMAT)
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
           .onQualifiers(Qualifiers.PROJECT)
