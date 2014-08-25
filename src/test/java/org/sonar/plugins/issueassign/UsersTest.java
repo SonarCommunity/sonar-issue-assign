@@ -48,6 +48,7 @@ public class UsersTest {
 
   private static final String NON_EMAIL_USERNAME = "username";
   private static final String EMAIL_USERNAME = "username@domain.com";
+  private static final String EMBEDDED_EMAIL_USERNAME = "UserName<username@domain.com>";
   private static final String NON_MATCHING_EMAIL = "dontmatch@domain.com";
   private List<User> sonarUsers;
 
@@ -89,6 +90,19 @@ public class UsersTest {
   }
 
   @Test
+  public void findSonarUserAsEmbeddedEmailAddress() throws SonarUserNotFoundException {
+    when(userFinder.findByLogin(EMBEDDED_EMAIL_USERNAME)).thenReturn(null);
+    when(userFinder.find(isA(UserQuery.class))).thenReturn(this.sonarUsers);
+    when(emailUser.email()).thenReturn(EMAIL_USERNAME);
+    when(nonEmailUser.email()).thenReturn(null);
+
+    final Users classUnderTest = new Users(userFinder);
+    final User user = classUnderTest.getSonarUser(EMBEDDED_EMAIL_USERNAME);
+
+    assertThat(user).isSameAs(this.emailUser);
+  }
+
+  @Test
   public void findSonarUserAsEmailAddressTwiceToTestCache() throws SonarUserNotFoundException {
     when(userFinder.findByLogin(EMAIL_USERNAME)).thenReturn(null);
     when(userFinder.find(isA(UserQuery.class))).thenReturn(this.sonarUsers);
@@ -112,5 +126,23 @@ public class UsersTest {
 
     final Users classUnderTest = new Users(userFinder);
     classUnderTest.getSonarUser(EMAIL_USERNAME);
+  }
+
+  @Test
+  public void testHasEmbeddedEmailAddress() {
+    final Users classUnderTest = new Users(userFinder);
+
+    String userName = "UserName<user@company.com>";
+    boolean result = classUnderTest.hasEmbeddedEmailAddress(userName);
+    assertThat(result).isEqualTo(true);
+
+    userName = "<user@company.com>";
+    result = classUnderTest.hasEmbeddedEmailAddress(userName);
+    assertThat(result).isEqualTo(true);
+
+    userName = "UserName";
+    result = classUnderTest.hasEmbeddedEmailAddress(userName);
+    assertThat(result).isEqualTo(false);
+
   }
 }

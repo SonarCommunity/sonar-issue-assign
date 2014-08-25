@@ -63,6 +63,8 @@ public class IssueAssigner implements IssueHandler {
     try {
       if (this.shouldAssign(issue)) {
         this.assignIssue(context, issue);
+      } else {
+          LOG.debug("Issue won't be auto-assigned.");
       }
     } catch (final IssueAssignPluginException pluginException) {
       LOG.warn("Unable to assign issue [" + issue.key() + "]");
@@ -97,7 +99,7 @@ public class IssueAssigner implements IssueHandler {
 
   private boolean issueCreatedAfterCutoffDate(final Issue issue) throws IssueAssignPluginException {
 
-    boolean result = false;
+    boolean result = true;
     final String issueCutoffDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE);
     final DateFormat df = new SimpleDateFormat(ISSUE_CUTOFF_DATE_FORMAT);
 

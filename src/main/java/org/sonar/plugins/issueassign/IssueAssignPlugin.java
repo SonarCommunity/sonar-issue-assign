@@ -169,26 +169,6 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)
-          .build(),
-
-        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)
-          .name("SCM Author email start character")
-          .description("Use to identify an email address embedded into an SCM username.  For example, a Git username such as: GitUser&lt;gituser@domain.com&gt;.")
-          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
-          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
-          .onQualifiers(Qualifiers.PROJECT)
-          .type(PropertyType.STRING)
-          .defaultValue("")
-          .build(),
-
-        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)
-          .name("SCM Author email end character")
-          .description("Use to identify an email address embedded into an SCM username.  For example, a Git username such as: GitUser&lt;gituser@domain.com&gt;.")
-          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
-          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
-          .onQualifiers(Qualifiers.PROJECT)
-          .type(PropertyType.STRING)
-          .defaultValue("")
           .build()
       );
   }

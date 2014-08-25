@@ -64,23 +64,6 @@ public class IssueAssignerTest {
   private static final String ISSUE_KEY = "issueKey";
 
   @Test
-  public void testOnIssueNotNewIssue() throws Exception {
-    when(context.issue()).thenReturn(issue);
-    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(issue.isNew()).thenReturn(false);
-
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-    classUnderTest.onIssue(context);
-
-    // verify that assignIssue() wasn't called.
-    verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
-    verifyZeroInteractions(blame);
-  }
-
-  @Test
   public void testOnIssueNotSevereEnough() throws Exception {
       when(context.issue()).thenReturn(issue);
       when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);

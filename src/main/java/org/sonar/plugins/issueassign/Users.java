@@ -22,7 +22,6 @@ package org.sonar.plugins.issueassign;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.config.Settings;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.api.user.UserQuery;
@@ -31,37 +30,38 @@ import org.sonar.plugins.issueassign.exception.SonarUserNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Users {
 
   private static final Logger LOG = LoggerFactory.getLogger(Users.class);
+  private static final Pattern EMBEDDED_EMAIL_PATTERN = Pattern.compile(".*<.*@.*>.*");
   private final UserFinder userFinder;
-  private final Settings settings;
   private Map<String, User> emailToUserMap;
 
   public Users(final UserFinder userFinder) {
     this.userFinder = userFinder;
-    this.settings = null;
-  }
-
-  public Users(final UserFinder userFinder, final Settings settings) {
-    this.userFinder = userFinder;
-    this.settings = settings;
   }
 
   public User getSonarUser(final String userName) throws SonarUserNotFoundException {
 
     final User sonarUser = this.userFinder.findByLogin(userName);
+
     if (sonarUser == null) {
+      if (isEmailAddress(userName)) {
+        String emailAddress;
+        if (hasEmbeddedEmailAddress(userName)) {
+          LOG.debug("Username {} contains an embedded email address.", userName);
+          emailAddress = extractEmail(userName);
+          LOG.debug("Extracted email address: {}", emailAddress);
+        }
+        else {
+          emailAddress = userName;
+        }
 
-      String tempUserName = userName;
-      if (isAuthorAndEmail(tempUserName)) {
-        tempUserName = extractEmail(tempUserName);
-      }
-
-      if (isEmailAddress(tempUserName)) {
         LOG.debug("SCM author is an email address, trying lookup by email...");
-        return this.getSonarUserByEmail(tempUserName);
+        return this.getSonarUserByEmail(emailAddress);
       }
       throw new SonarUserNotFoundException();
     }
@@ -75,35 +75,16 @@ public class Users {
     return userName.contains("@");
   }
 
-  private boolean isAuthorAndEmail(final String userName) {
-
-    boolean result = false;
-
-    if (this.settings != null) {
-      String startDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR);
-      String endDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR);
-
-      if (startDelim != null && endDelim != null && startDelim.trim().length() > 0 && endDelim.trim().length() > 0) {
-        result = userName.contains(startDelim) && userName.contains(endDelim);
-      }
-    }
-
-    return isEmailAddress(userName) && result;
+  // check for pattern like UserName<user@company.com>
+  protected boolean hasEmbeddedEmailAddress(final String userName) {
+    final Matcher matcher = EMBEDDED_EMAIL_PATTERN.matcher(userName);
+    return matcher.find();
   }
 
   private String extractEmail(final String userName) {
-
     String tempUserName = userName;
-
-    if (this.settings != null) {
-      String startDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR);
-      String endDelim = this.settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR);
-
-      if (startDelim != null && endDelim != null && startDelim.trim().length() > 0 && endDelim.trim().length() > 0) {
-        tempUserName = tempUserName.substring(tempUserName.indexOf(startDelim) + 1);
-        tempUserName = tempUserName.substring(0, tempUserName.indexOf(endDelim));
-      }
-    }
+    tempUserName = tempUserName.substring(tempUserName.indexOf("<") + 1);
+    tempUserName = tempUserName.substring(0, tempUserName.indexOf(">"));
     return tempUserName;
   }
 
