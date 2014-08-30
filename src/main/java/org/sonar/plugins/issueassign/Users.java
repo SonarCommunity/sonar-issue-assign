@@ -55,8 +55,7 @@ public class Users {
           LOG.debug("Username {} contains an embedded email address.", userName);
           emailAddress = extractEmail(userName);
           LOG.debug("Extracted email address: {}", emailAddress);
-        }
-        else {
+        } else {
           emailAddress = userName;
         }
 
