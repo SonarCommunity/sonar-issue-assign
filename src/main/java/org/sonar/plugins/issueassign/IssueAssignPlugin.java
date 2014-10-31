@@ -47,6 +47,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.changed.content";
   public static final String PROPERTY_SEVERITY = "sonar.issueassign.severity";
+  public static final String PROPERTY_ONLY_ASSIGN_NEW = "sonar.onlyassignnew";
 
   public static final String CONFIGURATION_CATEGORY = "Issue Assign";
   public static final String CONFIGURATION_SUBCATEGORY_WHEN = "when";
@@ -131,12 +132,22 @@ public final class IssueAssignPlugin extends SonarPlugin {
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)
           .name("Issue cutoff date")
-          .description("Only auto-assign issues introduced after this date. Use the format " + IssueAssigner.ISSUE_CUTOFF_DATE_FORMAT)
+          .description("Only auto-assign issues introduced after this date. Use the format " + IssueWrapper.ISSUE_CUTOFF_DATE_FORMAT)
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
           .onQualifiers(Qualifiers.PROJECT)
           .type(PropertyType.STRING)
           .defaultValue("")
+          .build(),
+
+      PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW)
+          .name("Only assign new issues")
+          .description("Only auto-assign issues that are new.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.BOOLEAN)
+          .defaultValue("true")
           .build());
   }
 

@@ -32,11 +32,7 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAssignerTest {
@@ -63,81 +59,6 @@ public class IssueAssignerTest {
   private static final String SCM_AUTHOR_WITH_EMAIL = "author <email@test.com>";
   private static final String ISSUE_KEY = "issueKey";
 
-  @Test
-  public void testOnIssueNotSevereEnough() throws Exception {
-      when(context.issue()).thenReturn(issue);
-      when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-      when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
-      when(issue.severity()).thenReturn("MINOR");
-
-      final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-      Whitebox.setInternalState(classUnderTest, "blame", blame);
-      Whitebox.setInternalState(classUnderTest, "assign", assign);
-      classUnderTest.onIssue(context);
-
-      // verify that assignIssue() wasn't called.
-      verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
-      verifyZeroInteractions(blame);
-  }
-
-  @Test
-  public void creationDateAfterIssueCutoffDate() throws Exception {
-
-    String issueCreationDateText = "03/04/2014";
-    String cutoffDateText = "02/04/2014";
-
-    SimpleDateFormat df = new SimpleDateFormat(IssueAssigner.ISSUE_CUTOFF_DATE_FORMAT);
-    Date issueCreationDate = df.parse(issueCreationDateText);
-
-    when(context.issue()).thenReturn(issue);
-    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
-    when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
-    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)).thenReturn(true);
-    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR_WITH_EMAIL);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_START_CHAR)).thenReturn("<");
-    when(settings.getString(IssueAssignPlugin.PROPERTY_EMAIL_END_CHAR)).thenReturn(">");
-    when(assign.getAssignee(SCM_AUTHOR_WITH_EMAIL)).thenReturn(assignee);
-
-    when(issue.creationDate()).thenReturn(issueCreationDate);
-
-    final IssueHandler classUnderTest =
-      new org.sonar.plugins.issueassign.IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-    Whitebox.setInternalState(classUnderTest, "settings", settings);
-    classUnderTest.onIssue(context);
-
-    // verify that assignIssue() was called
-    verify(settings).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
-    verify(blame).getScmAuthorForIssue(issue, true);
-  }
-
-  @Test
-  public void creationDateBeforeIssueCutoffDate() throws Exception {
-
-    String issueCreationDateText = "01/04/2014";
-    String cutoffDateText = "02/04/2014";
-
-    SimpleDateFormat df = new SimpleDateFormat(IssueAssigner.ISSUE_CUTOFF_DATE_FORMAT);
-    Date issueCreationDate = df.parse(issueCreationDateText);
-
-    when(context.issue()).thenReturn(issue);
-    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
-    when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
-    when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
-
-    final IssueHandler classUnderTest =
-      new org.sonar.plugins.issueassign.IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-    classUnderTest.onIssue(context);
-
-    // verify that assignIssue() wasn't called.
-    verify(settings, never()).getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
-  }
 
   @Test
   public void testOnIssueWithScmAuthor() throws Exception {
@@ -231,38 +152,5 @@ public class IssueAssignerTest {
     Whitebox.setInternalState(classUnderTest, "assign", assign);
 
     classUnderTest.onIssue(context);
-  }
-
-  @Test
-  public void testIsSevereEnoughEqualTo() {
-
-      when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
-      when(issue.severity()).thenReturn("MAJOR");
-
-      final IssueAssigner classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-      final boolean result = classUnderTest.isSevereEnough(issue);
-      assertThat(result).isEqualTo(true);
-  }
-
-  @Test
-  public void testIsSevereEnoughLessThan() {
-
-    when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
-    when(issue.severity()).thenReturn("MINOR");
-
-    final IssueAssigner classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    final boolean result = classUnderTest.isSevereEnough(issue);
-    assertThat(result).isEqualTo(false);
-  }
-
-  @Test
-  public void testIsSevereEnoughGreaterThan() {
-
-    when(settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY)).thenReturn("MAJOR");
-    when(issue.severity()).thenReturn("CRITICAL");
-
-    final IssueAssigner classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    final boolean result = classUnderTest.isSevereEnough(issue);
-    assertThat(result).isEqualTo(true);
   }
 }

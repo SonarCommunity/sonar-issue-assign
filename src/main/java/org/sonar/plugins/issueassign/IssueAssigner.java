@@ -25,21 +25,13 @@ import org.sonar.api.batch.SonarIndex;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.IssueHandler;
-import org.sonar.api.rule.Severity;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 public class IssueAssigner implements IssueHandler {
 
-  static final String ISSUE_CUTOFF_DATE_FORMAT = "dd/MM/yyyy";
   private static final Logger LOG = LoggerFactory.getLogger(IssueAssigner.class);
   private final Settings settings;
   private final Blame blame;
@@ -53,7 +45,7 @@ public class IssueAssigner implements IssueHandler {
 
   public void onIssue(final Context context) {
 
-    if (!shouldExecute()) {
+    if (!isPluginEnabled()) {
       return;
     }
 
@@ -61,7 +53,8 @@ public class IssueAssigner implements IssueHandler {
     LOG.debug("Found new issue [" + issue.key() + "]");
 
     try {
-      if (this.shouldAssign(issue)) {
+      final IssueWrapper issueWrapper = new IssueWrapper(issue, this.settings, this.blame);
+      if (issueWrapper.isAssignable()) {
         this.assignIssue(context, issue);
       } else {
           LOG.debug("Issue won't be auto-assigned.");
@@ -71,66 +64,6 @@ public class IssueAssigner implements IssueHandler {
     } catch (final Exception e) {
       LOG.error("Error assigning issue [" + issue.key() + "]", e);
     }
-  }
-
-  private boolean shouldAssign(final Issue issue) throws IssueAssignPluginException {
-    return issue.assignee() == null &&
-           isSevereEnough(issue) &&
-           issueCreatedAfterCutoffDate(issue);
-  }
-
-  protected boolean isSevereEnough(final Issue issue) {
-      final String configuredSeverity = this.settings.getString(IssueAssignPlugin.PROPERTY_SEVERITY);
-      final String issueSeverity = issue.severity();
-
-      LOG.debug("Configured auto-assign severity: {}", configuredSeverity);
-      LOG.debug("Issue {} severity: {}", issue.key(), issueSeverity);
-
-      final List<String> severities = Severity.ALL;
-
-      final int configuredSeverityIndex = severities.indexOf(configuredSeverity);
-      final int issueSeverityIndex = severities.indexOf(issueSeverity);
-      final boolean isSevereEnough = issueSeverityIndex >= configuredSeverityIndex;
-
-      LOG.debug("Issue {} severe enough to auto-assign: {}", issue.key(), isSevereEnough);
-
-      return isSevereEnough;
-  }
-
-  private boolean issueCreatedAfterCutoffDate(final Issue issue) throws IssueAssignPluginException {
-
-    boolean result = true;
-    final String issueCutoffDatePref = this.settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE);
-    final DateFormat df = new SimpleDateFormat(ISSUE_CUTOFF_DATE_FORMAT);
-
-    try {
-      if (issueCutoffDatePref != null) {
-        final Date cutoffDate = df.parse(issueCutoffDatePref);
-
-        if (cutoffDate != null) {
-          LOG.debug("Issue cutoff date is {}", cutoffDate);
-          result = this.createdAfterCutoffDate(issue, cutoffDate);
-        }
-      }
-    } catch (ParseException e) {
-      LOG.error("Unable to parse date: " + issueCutoffDatePref);
-    }
-
-    return result;
-  }
-
-  private boolean createdAfterCutoffDate(final Issue issue, final Date cutoffDate)
-    throws IssueAssignPluginException {
-    Date issueCreatedDate = this.blame.getCommitDateForIssue(issue);
-    boolean createdAfter = issueCreatedDate.after(cutoffDate);
-
-    if (createdAfter) {
-      LOG.debug("Issue {} created after cutoff date, will attempt to assign.", issue.key());
-    } else {
-      LOG.debug("Issue {} created before cutoff date and will not attempt to assign.", issue.key());
-    }
-
-    return createdAfter;
   }
 
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {
@@ -151,7 +84,7 @@ public class IssueAssigner implements IssueHandler {
     context.assign(assignee);
   }
 
-  private boolean shouldExecute() {
+  private boolean isPluginEnabled() {
     return this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED);
   }
 }
