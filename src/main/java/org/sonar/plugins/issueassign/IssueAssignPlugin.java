@@ -39,8 +39,6 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_OVERRIDE_ASSIGNEE = "sonar.issueassign.override.assignee";
   public static final String PROPERTY_ENABLED = "sonar.issueassign.enabled";
   public static final String PROPERTY_ISSUE_CUTOFF_DATE = "sonar.issueassign.issue.cutoff";
-  public static final String PROPERTY_EMAIL_START_CHAR = "sonar.issueassign.email.start.char";
-  public static final String PROPERTY_EMAIL_END_CHAR = "sonar.issueassign.email.end.char";
   public static final String PROPERTY_ASSIGN_TO_AUTHOR = "sonar.issueassign.assign.to.last.committer";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.new.subject";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
@@ -50,9 +48,9 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_ONLY_ASSIGN_NEW = "sonar.onlyassignnew";
 
   public static final String CONFIGURATION_CATEGORY = "Issue Assign";
-  public static final String CONFIGURATION_SUBCATEGORY_WHEN = "when";
-  public static final String CONFIGURATION_SUBCATEGORY_NOTIFY = "notify";
-  public static final String CONFIGURATION_SUBCATEGORY_WHO = "who";
+  public static final String CONFIGURATION_SUBCATEGORY_WHEN = "When";
+  public static final String CONFIGURATION_SUBCATEGORY_NOTIFY = "Notify";
+  public static final String CONFIGURATION_SUBCATEGORY_WHO = "Who";
 
   public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
   public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
@@ -111,13 +109,13 @@ public final class IssueAssignPlugin extends SonarPlugin {
     return ImmutableList
       .of(PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_SEVERITY)
         .name("Severity")
-        .description("Only auto-assign issues with a severity equal to or greater than the selected value.")
+        .description("Only assign issues with a severity equal to or greater than the selected value.")
         .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
         .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
         .onQualifiers(Qualifiers.PROJECT)
         .type(PropertyType.SINGLE_SELECT_LIST)
         .options(Severity.ALL)
-        .defaultValue(Severity.INFO.toString())
+        .defaultValue(Severity.INFO)
         .build(),
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ENABLED)
@@ -132,7 +130,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)
           .name("Issue cutoff date")
-          .description("Only auto-assign issues introduced after this date. Use the format " + IssueWrapper.ISSUE_CUTOFF_DATE_FORMAT)
+          .description("Only assign issues introduced after this date. Use the format " + IssueWrapper.ISSUE_CUTOFF_DATE_FORMAT)
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
           .onQualifiers(Qualifiers.PROJECT)
@@ -142,7 +140,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
 
       PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW)
           .name("Only assign new issues")
-          .description("Only auto-assign issues that are new.")
+          .description("Only assign new issues raised in the current analysis.  Set to false to assign all qualified unassigned issues.")
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
           .onQualifiers(Qualifiers.PROJECT)
@@ -166,7 +164,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .builder(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)
           .name("Always assign to Author")
           .description(
-                  "Set to true if you want to always assign to the defect author, set to false if you want to assign to the last committer on the file if they are different from the author.")
+                  "Set to true if you want to always assign to the issue author, set to false if you want to assign to the last committer on the file if they are different from the author.")
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)
@@ -176,7 +174,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE)
           .name("Default Assignee")
-          .description("Sonar user to whom issues will be assigned if the original SCM author is not available in SonarQube.")
+          .description("SonarQube user to whom issues will be assigned if the original SCM author is not available in SonarQube.")
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)
