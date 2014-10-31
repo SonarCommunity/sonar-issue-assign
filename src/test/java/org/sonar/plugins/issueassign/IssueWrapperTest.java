@@ -94,6 +94,23 @@ public class IssueWrapperTest {
     }
 
     @Test
+    public void dodgy_issue_cutoff_date() throws Exception {
+
+        String issueCreationDateText = "03/04/2014";
+        String cutoffDateText = "dodgy";
+
+        SimpleDateFormat df = new SimpleDateFormat(IssueWrapper.ISSUE_CUTOFF_DATE_FORMAT);
+        Date issueCreationDate = df.parse(issueCreationDateText);
+
+        when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
+        when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
+        when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)).thenReturn(true);
+        when(issue.creationDate()).thenReturn(issueCreationDate);
+
+        assertThat(this.testSubject.isAssignable()).isTrue();
+    }
+
+    @Test
     public void creation_date_after_issue_cutoff_date() throws Exception {
 
         String issueCreationDateText = "03/04/2014";

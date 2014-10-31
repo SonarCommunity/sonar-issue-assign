@@ -97,10 +97,8 @@ public class IssueWrapper {
             if (issueCutoffDatePref != null) {
                 final Date cutoffDate = df.parse(issueCutoffDatePref);
 
-                if (cutoffDate != null) {
-                    LOG.debug("Issue cutoff date is {}", cutoffDate);
-                    result = this.createdAfterCutoffDate(sonarIssue, cutoffDate, issueCreatedDate);
-                }
+                LOG.debug("Issue cutoff date is {}", cutoffDate);
+                result = this.createdAfterCutoffDate(sonarIssue, cutoffDate, issueCreatedDate);
             }
         } catch (ParseException e) {
             LOG.error("Unable to parse date: " + issueCutoffDatePref);

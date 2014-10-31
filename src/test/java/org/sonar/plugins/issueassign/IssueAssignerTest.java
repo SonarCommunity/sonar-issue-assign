@@ -56,7 +56,6 @@ public class IssueAssignerTest {
 
   private static final String COMPONENT_KEY = "str1:str2:str3";
   private static final String SCM_AUTHOR = "author";
-  private static final String SCM_AUTHOR_WITH_EMAIL = "author <email@test.com>";
   private static final String ISSUE_KEY = "issueKey";
 
 
@@ -67,6 +66,26 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(issue.isNew()).thenReturn(true);
+    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
+    when(issue.key()).thenReturn(ISSUE_KEY);
+    when(assign.getAssignee(SCM_AUTHOR)).thenReturn(assignee);
+
+    context.assign(assignee);
+
+    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
+    Whitebox.setInternalState(classUnderTest, "blame", blame);
+    Whitebox.setInternalState(classUnderTest, "assign", assign);
+
+    classUnderTest.onIssue(context);
+  }
+
+  @Test
+  public void testOnIssueNotAssignable() throws Exception {
+
+    when(context.issue()).thenReturn(issue);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
+    when(issue.isNew()).thenReturn(false); // not assignable
     when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenReturn(assignee);
