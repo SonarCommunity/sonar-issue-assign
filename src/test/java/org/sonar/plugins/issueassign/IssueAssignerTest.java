@@ -21,6 +21,7 @@ package org.sonar.plugins.issueassign;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -32,7 +33,7 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAssignerTest {
@@ -54,6 +55,9 @@ public class IssueAssignerTest {
   @Mock
   private SonarIndex sonarIndex;
 
+  @InjectMocks
+  private IssueAssigner testSubject;
+
   private static final String COMPONENT_KEY = "str1:str2:str3";
   private static final String SCM_AUTHOR = "author";
   private static final String ISSUE_KEY = "issueKey";
@@ -70,13 +74,11 @@ public class IssueAssignerTest {
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenReturn(assignee);
 
-    context.assign(assignee);
-
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-
-    classUnderTest.onIssue(context);
+    Whitebox.setInternalState(testSubject, "blame", blame);
+    Whitebox.setInternalState(testSubject, "assign", assign);
+    testSubject.onIssue(context);
+    verify(assign, times(1)).getAssignee(SCM_AUTHOR);
+    verify(context, times(1)).assign(assignee);
   }
 
   @Test
@@ -85,18 +87,15 @@ public class IssueAssignerTest {
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW)).thenReturn(true);
     when(issue.isNew()).thenReturn(false); // not assignable
-    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
-    when(issue.key()).thenReturn(ISSUE_KEY);
-    when(assign.getAssignee(SCM_AUTHOR)).thenReturn(assignee);
 
-    context.assign(assignee);
+    Whitebox.setInternalState(testSubject, "blame", blame);
+    Whitebox.setInternalState(testSubject, "assign", assign);
+    testSubject.onIssue(context);
 
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-
-    classUnderTest.onIssue(context);
+    verifyZeroInteractions(blame, assign);
+    verify(context, never()).assign(assignee);
   }
 
   @Test
@@ -106,17 +105,15 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(true);
     when(issue.isNew()).thenReturn(true);
-    when(blame.getScmAuthorForIssue(issue, false)).thenReturn(SCM_AUTHOR);
+    when(blame.getScmAuthorForIssue(issue, false)).thenThrow(RuntimeException.class);
     when(issue.key()).thenReturn(ISSUE_KEY);
-    when(assign.getAssignee(SCM_AUTHOR)).thenThrow(RuntimeException.class);
 
-    context.assign(assignee);
+    Whitebox.setInternalState(testSubject, "blame", blame);
+    Whitebox.setInternalState(testSubject, "assign", assign);
+    testSubject.onIssue(context);
 
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-
-    classUnderTest.onIssue(context);
+    verifyZeroInteractions(assign);
+    verify(context, never()).assign(assignee);
   }
 
   @Test
@@ -130,11 +127,12 @@ public class IssueAssignerTest {
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee(SCM_AUTHOR)).thenThrow(IssueAssignPluginException.class);
 
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
+    Whitebox.setInternalState(testSubject, "blame", blame);
+    Whitebox.setInternalState(testSubject, "assign", assign);
+    testSubject.onIssue(context);
 
-    classUnderTest.onIssue(context);
+    verify(assign, times(1)).getAssignee(SCM_AUTHOR);
+    verify(context, never()).assign(assignee);
   }
 
   @Test
@@ -144,13 +142,13 @@ public class IssueAssignerTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED)).thenReturn(false);
 
-    context.assign(assignee);
+    Whitebox.setInternalState(testSubject, "blame", blame);
+    Whitebox.setInternalState(testSubject, "assign", assign);
 
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
+    testSubject.onIssue(context);
 
-    classUnderTest.onIssue(context);
+    verifyZeroInteractions(assign, blame);
+    verify(context, never()).assign(assignee);
   }
 
   @Test
@@ -164,12 +162,11 @@ public class IssueAssignerTest {
     when(issue.key()).thenReturn(ISSUE_KEY);
     when(assign.getAssignee()).thenReturn(assignee);
 
-    context.assign(assignee);
+    Whitebox.setInternalState(testSubject, "blame", blame);
+    Whitebox.setInternalState(testSubject, "assign", assign);
+    testSubject.onIssue(context);
 
-    final IssueHandler classUnderTest = new IssueAssigner(settings, userFinder, sonarIndex);
-    Whitebox.setInternalState(classUnderTest, "blame", blame);
-    Whitebox.setInternalState(classUnderTest, "assign", assign);
-
-    classUnderTest.onIssue(context);
+    verify(assign, times(1)).getAssignee();
+    verify(context, times(1)).assign(assignee);
   }
 }
