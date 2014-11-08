@@ -31,6 +31,7 @@ import java.util.Collection;
 public class ResourceFinder {
 
   private static final Logger LOG = LoggerFactory.getLogger(ResourceFinder.class);
+  private static final int RESOURCE_KEY_INDEX_N0 = 2;
   private SonarIndex sonarIndex;
 
   public ResourceFinder(final SonarIndex sonarIndex) {
@@ -59,7 +60,7 @@ public class ResourceFinder {
 
   // component key format: org:project:resourceKey
   private String getResourceKeyFromComponentKey(final String componentKey) {
-    return componentKey.split(":")[2];
+    return componentKey.split(":")[RESOURCE_KEY_INDEX_N0];
   }
 
   private Resource searchAllResources(final String componentKey) throws ResourceNotFoundException {

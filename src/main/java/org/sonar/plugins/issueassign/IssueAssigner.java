@@ -43,6 +43,7 @@ public class IssueAssigner implements IssueHandler {
     this.settings = settings;
   }
 
+  @Override
   public void onIssue(final Context context) {
 
     if (!isPluginEnabled()) {

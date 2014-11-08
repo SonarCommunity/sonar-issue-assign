@@ -58,10 +58,12 @@ public class IssueWrapper {
         final boolean onlyAssignNew = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW);
 
         if (!onlyAssignNew) {
-            return true; // we can assign new and existing issues
+            // we can assign new and existing issues
+            return true;
         }
 
-        return isNew; // only assign if new
+        // only assign if new
+        return isNew;
     }
 
     private boolean isUnassigned() {

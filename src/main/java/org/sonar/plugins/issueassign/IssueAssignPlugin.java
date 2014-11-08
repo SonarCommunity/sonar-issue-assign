@@ -181,6 +181,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
       );
   }
 
+  @Override
   public List<Object> getExtensions() {
     List<Object> extensions = new ArrayList<Object>();
     extensions.add(IssueAssigner.class);
