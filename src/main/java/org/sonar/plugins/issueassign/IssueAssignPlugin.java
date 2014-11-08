@@ -40,6 +40,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_ENABLED = "sonar.issueassign.enabled";
   public static final String PROPERTY_ISSUE_CUTOFF_DATE = "sonar.issueassign.issue.cutoff";
   public static final String PROPERTY_ASSIGN_TO_LAST_COMMITTER = "sonar.issueassign.assign.to.last.committer";
+  public static final String PROPERTY_ASSIGN_BLAMELESS_TO_LAST_COMMITTER = "sonar.issueassign.assign.blameless.to.last.committer";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.new.subject";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
@@ -170,6 +171,19 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .type(PropertyType.BOOLEAN)
           .defaultValue("false")
           .build(),
+
+        PropertyDefinition
+          .builder(IssueAssignPlugin.PROPERTY_ASSIGN_BLAMELESS_TO_LAST_COMMITTER)
+          .name("Assign 'blameless issues' to last committer")
+          .description("Assign blameless issues to the last committer of the file.  Blameless issues are issues that " +
+                       "don't have an associated line number and therefore cannot be resolved to a particular commit.  " +
+                       "For example: squid:S00104 'Files should not have too many lines'")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+                .type(PropertyType.BOOLEAN)
+          .defaultValue("true")
+                .build(),
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE)
           .name("Default Assignee")

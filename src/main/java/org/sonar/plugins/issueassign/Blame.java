@@ -21,6 +21,7 @@ package org.sonar.plugins.issueassign;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
@@ -38,10 +39,12 @@ public class Blame {
   private Map<String, ScmMeasures> resourceMeasuresMap = new HashMap<String, ScmMeasures>();
   private final ResourceFinder resourceFinder;
   private final MeasuresFinder measuresFinder;
+  private final Settings settings;
 
-  public Blame(final ResourceFinder resourceFinder, final MeasuresFinder measuresFinder) {
+  public Blame(final ResourceFinder resourceFinder, final MeasuresFinder measuresFinder, final Settings settings) {
     this.resourceFinder = resourceFinder;
     this.measuresFinder = measuresFinder;
+    this.settings = settings;
   }
 
   public String getScmAuthorForIssue(final Issue issue, final boolean assignToLastCommitter) throws IssueAssignPluginException {
@@ -94,6 +97,10 @@ public class Blame {
 
     if (issueLine == null) {
       LOG.debug("Issue {} from rule {} has no associated source line.", issue.key(), issue.message());
+
+      if (this.assignBlamelessToLastCommitter()) {
+        return this.getLastCommitterForResource(issue.componentKey());
+      }
       return null;
     }
 
@@ -101,6 +108,12 @@ public class Blame {
     final String author =  getMeasuresForResource(issue.componentKey()).getAuthorsByLine().get(issueLine);
     LOG.debug("Found author {} for issue.", author);
     return author;
+  }
+
+  private boolean assignBlamelessToLastCommitter() {
+    final boolean assignBlameless = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_BLAMELESS_TO_LAST_COMMITTER);
+    LOG.debug("Assign blameless to last committer: {}.", assignBlameless);
+    return assignBlameless;
   }
 
   private ScmMeasures getMeasuresForResource(final String resourceKey) throws IssueAssignPluginException {

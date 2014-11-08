@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.resources.Resource;
 import org.sonar.plugins.issueassign.exception.MissingScmMeasureDataException;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.when;
 public class BlameTest {
 
   @Mock
-  private Issue mockIssue;
+  private Issue issue;
   @Mock
   private ScmMeasures scmMeasures;
   @Mock
@@ -57,6 +58,8 @@ public class BlameTest {
   private MeasuresFinder measuresFinder;
   @Mock
   private Resource resource;
+  @Mock
+  private Settings settings;
 
   @InjectMocks
   private Blame testSubject;
@@ -105,10 +108,10 @@ public class BlameTest {
     when(scmMeasures.getAuthorsByLine()).thenReturn(authorMap);
     when(scmMeasures.getLastCommitsByLine()).thenReturn(lastCommitDateMap);
 
-    when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(mockIssue.line()).thenReturn(1);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.line()).thenReturn(1);
 
-    final String author = testSubject.getScmAuthorForIssue(mockIssue, false);
+    final String author = testSubject.getScmAuthorForIssue(issue, false);
     assertThat(author).isEqualTo(AUTHOR1);
   }
 
@@ -123,13 +126,13 @@ public class BlameTest {
     lastCommitDateMap.put(3, DATE3);
     lastCommitDateMap.put(4, DATE3);
 
-    when(mockIssue.line()).thenReturn(issueLineNumber);
-    when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.line()).thenReturn(issueLineNumber);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(resourceFinder.find(COMPONENT_KEY)).thenReturn(resource);
     when(measuresFinder.getMeasures(resource)).thenReturn(scmMeasures);
     when(scmMeasures.getLastCommitsByLine()).thenReturn(lastCommitDateMap);
 
-    final Date commitDate = testSubject.getCommitDateForIssue(mockIssue);
+    final Date commitDate = testSubject.getCommitDateForIssue(issue);
     assertThat(commitDate).isEqualTo(DATE1);
   }
 
@@ -142,22 +145,44 @@ public class BlameTest {
     lastCommitDateMap.put(3, DATE3);
     lastCommitDateMap.put(4, DATE3);
 
-    when(mockIssue.line()).thenReturn(null);
-    when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.line()).thenReturn(null);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(resourceFinder.find(COMPONENT_KEY)).thenReturn(resource);
     when(measuresFinder.getMeasures(resource)).thenReturn(scmMeasures);
     when(scmMeasures.getLastCommitsByLine()).thenReturn(lastCommitDateMap);
 
-    final Date commitDate = testSubject.getCommitDateForIssue(mockIssue);
+    final Date commitDate = testSubject.getCommitDateForIssue(issue);
     assertThat(commitDate).isEqualTo(DATE3);
   }
 
   @Test
   public void getScmAuthorForIssueWithNoLineNumber() throws Exception {
-    when(mockIssue.line()).thenReturn(null);
+    when(issue.line()).thenReturn(null);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_BLAMELESS_TO_LAST_COMMITTER)).thenReturn(false);
 
-    final String author = testSubject.getScmAuthorForIssue(mockIssue, false);
+    final String author = testSubject.getScmAuthorForIssue(issue, false);
     assertThat(author).isNull();
+  }
+
+  @Test
+  public void assignBlamelessToLastCommitter() throws Exception {
+
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    lastCommitDateMap.put(1, DATE1);
+    lastCommitDateMap.put(2, DATE2);
+    lastCommitDateMap.put(3, DATE3);
+
+    when(issue.line()).thenReturn(null);
+    when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_BLAMELESS_TO_LAST_COMMITTER)).thenReturn(true);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(resourceFinder.find(COMPONENT_KEY)).thenReturn(resource);
+    when(measuresFinder.getMeasures(resource)).thenReturn(scmMeasures);
+    when(scmMeasures.getLastCommitsByLine()).thenReturn(lastCommitDateMap);
+    when(scmMeasures.getAuthorsByLine()).thenReturn(authorMap);
+    when(authorMap.get(3)).thenReturn(AUTHOR3);
+
+    final String author = testSubject.getScmAuthorForIssue(issue, false);
+    assertThat(author).isEqualTo(AUTHOR3);
   }
 
   @Test
@@ -178,10 +203,10 @@ public class BlameTest {
     when(scmMeasures.getAuthorsByLine()).thenReturn(authorMap);
     when(scmMeasures.getLastCommitsByLine()).thenReturn(lastCommitDateMap);
 
-    when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(mockIssue.line()).thenReturn(1);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.line()).thenReturn(1);
 
-    final String author = testSubject.getScmAuthorForIssue(mockIssue, true);
+    final String author = testSubject.getScmAuthorForIssue(issue, true);
     assertThat(author).isEqualTo(AUTHOR3);
   }
 
@@ -190,7 +215,7 @@ public class BlameTest {
     when(measuresFinder.getMeasures(resource)).thenReturn(scmMeasures);
     when(scmMeasures.getAuthorsByLine()).thenReturn(null);
 
-    testSubject.getScmAuthorForIssue(mockIssue, false);
+    testSubject.getScmAuthorForIssue(issue, false);
   }
 
   @Test(expected = NoUniqueAuthorForLastCommitException.class)
@@ -209,10 +234,10 @@ public class BlameTest {
     when(scmMeasures.getAuthorsByLine()).thenReturn(authorMap);
     when(scmMeasures.getLastCommitsByLine()).thenReturn(lastCommitDateMap);
 
-    when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
-    when(mockIssue.line()).thenReturn(1);
+    when(issue.componentKey()).thenReturn(COMPONENT_KEY);
+    when(issue.line()).thenReturn(1);
 
-    final String author = testSubject.getScmAuthorForIssue(mockIssue, true);
+    final String author = testSubject.getScmAuthorForIssue(issue, true);
     assertThat(author).isEqualTo(AUTHOR3);
   }
 }

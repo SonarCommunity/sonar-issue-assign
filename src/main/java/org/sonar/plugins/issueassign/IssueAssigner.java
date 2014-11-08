@@ -38,7 +38,7 @@ public class IssueAssigner implements IssueHandler {
   private final Assign assign;
 
   public IssueAssigner(final Settings settings, final UserFinder userFinder, final SonarIndex sonarIndex) {
-    this.blame = new Blame(new ResourceFinder(sonarIndex), new MeasuresFinder(sonarIndex));
+    this.blame = new Blame(new ResourceFinder(sonarIndex), new MeasuresFinder(sonarIndex), settings);
     this.assign = new Assign(settings, userFinder);
     this.settings = settings;
   }
