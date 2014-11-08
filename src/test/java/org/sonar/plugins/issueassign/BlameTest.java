@@ -153,6 +153,14 @@ public class BlameTest {
   }
 
   @Test
+  public void getScmAuthorForIssueWithNoLineNumber() throws Exception {
+    when(mockIssue.line()).thenReturn(null);
+
+    final String author = testSubject.getScmAuthorForIssue(mockIssue, false);
+    assertThat(author).isNull();
+  }
+
+  @Test
   public void testGetAuthorIsLastCommitter() throws Exception {
 
     final Map<Integer, String> authorMap = new HashMap<Integer, String>();
@@ -173,7 +181,7 @@ public class BlameTest {
     when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
     when(mockIssue.line()).thenReturn(1);
 
-    final String author = testSubject.getScmAuthorForIssue(mockIssue, false);
+    final String author = testSubject.getScmAuthorForIssue(mockIssue, true);
     assertThat(author).isEqualTo(AUTHOR3);
   }
 
@@ -204,7 +212,7 @@ public class BlameTest {
     when(mockIssue.componentKey()).thenReturn(COMPONENT_KEY);
     when(mockIssue.line()).thenReturn(1);
 
-    final String author = testSubject.getScmAuthorForIssue(mockIssue, false);
+    final String author = testSubject.getScmAuthorForIssue(mockIssue, true);
     assertThat(author).isEqualTo(AUTHOR3);
   }
 }

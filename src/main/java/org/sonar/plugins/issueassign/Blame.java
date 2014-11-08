@@ -44,23 +44,17 @@ public class Blame {
     this.measuresFinder = measuresFinder;
   }
 
-  public String getScmAuthorForIssue(final Issue issue, final boolean assignToAuthor) throws IssueAssignPluginException {
-
-    final String authorForIssueLine = this.getAuthorForIssueLine(issue);
-    final String lastCommitterForResource = getLastCommitterForResource(issue.componentKey());
-
-    if (assignToAuthor || lastCommitterForResource.equals(authorForIssueLine)) {
-      LOG.debug("Author {} is also the last committer.", authorForIssueLine);
-      return authorForIssueLine;
+  public String getScmAuthorForIssue(final Issue issue, final boolean assignToLastCommitter) throws IssueAssignPluginException {
+    if (assignToLastCommitter) {
+      return this.getLastCommitterForResource(issue.componentKey());
     }
 
-    LOG.debug("Last committer differs from author, assigning to last committer {}", lastCommitterForResource);
-    return lastCommitterForResource;
+    return this.getAuthorForIssueLine(issue);
   }
 
   public Date getCommitDateForIssue(final Issue issue) throws IssueAssignPluginException {
      Date commitDate;
-     if (issue.line() == null){
+     if (issue.line() == null) {
          commitDate = getLastCommitDate(issue.componentKey());
          LOG.debug("Commit date for issue {} (file {}) is {}", issue.key(), issue.componentKey(), commitDate.toString());
      } else {
@@ -95,7 +89,18 @@ public class Blame {
   }
 
   private String getAuthorForIssueLine(final Issue issue) throws IssueAssignPluginException {
-    return getMeasuresForResource(issue.componentKey()).getAuthorsByLine().get(issue.line());
+
+    final Integer issueLine = issue.line();
+
+    if (issueLine == null) {
+      LOG.debug("Issue {} from rule {} has no associated source line.", issue.key(), issue.message());
+      return null;
+    }
+
+    LOG.debug("Issue line for issue {} is {}", issue.key(), issueLine);
+    final String author =  getMeasuresForResource(issue.componentKey()).getAuthorsByLine().get(issueLine);
+    LOG.debug("Found author {} for issue.", author);
+    return author;
   }
 
   private ScmMeasures getMeasuresForResource(final String resourceKey) throws IssueAssignPluginException {

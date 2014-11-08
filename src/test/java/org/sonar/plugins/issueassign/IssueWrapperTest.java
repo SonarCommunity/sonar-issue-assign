@@ -104,7 +104,7 @@ public class IssueWrapperTest {
 
         when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
         when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
-        when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)).thenReturn(true);
+        when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_LAST_COMMITTER)).thenReturn(true);
         when(issue.creationDate()).thenReturn(issueCreationDate);
 
         assertThat(this.testSubject.isAssignable()).isTrue();
@@ -121,7 +121,7 @@ public class IssueWrapperTest {
 
         when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
         when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
-        when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)).thenReturn(true);
+        when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_LAST_COMMITTER)).thenReturn(true);
         when(issue.creationDate()).thenReturn(issueCreationDate);
 
         assertThat(this.testSubject.isAssignable()).isTrue();

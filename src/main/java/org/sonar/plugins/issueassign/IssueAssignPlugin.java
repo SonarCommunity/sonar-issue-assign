@@ -39,7 +39,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_OVERRIDE_ASSIGNEE = "sonar.issueassign.override.assignee";
   public static final String PROPERTY_ENABLED = "sonar.issueassign.enabled";
   public static final String PROPERTY_ISSUE_CUTOFF_DATE = "sonar.issueassign.issue.cutoff";
-  public static final String PROPERTY_ASSIGN_TO_AUTHOR = "sonar.issueassign.assign.to.last.committer";
+  public static final String PROPERTY_ASSIGN_TO_LAST_COMMITTER = "sonar.issueassign.assign.to.last.committer";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.new.subject";
   public static final String PROPERTY_NEW_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.new.content";
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_SUBJECT = "sonar.issueassign.notification.changed.subject";
@@ -161,10 +161,9 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .build(),
 
         PropertyDefinition
-          .builder(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR)
-          .name("Always assign to Author")
-          .description(
-                  "Set to true if you want to always assign to the issue author, set to false if you want to assign to the last committer on the file if they are different from the author.")
+          .builder(IssueAssignPlugin.PROPERTY_ASSIGN_TO_LAST_COMMITTER)
+          .name("Assign to last committer")
+          .description("Assign issue to the last committer of the file, rather than the author as determined by the SCM metrics.")
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)

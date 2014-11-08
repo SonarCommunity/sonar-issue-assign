@@ -68,8 +68,8 @@ public class IssueAssigner implements IssueHandler {
 
   private void assignIssue(final Context context, final Issue issue) throws IssueAssignPluginException {
 
-    final boolean assignToAuthor = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_AUTHOR);
-    final String author = blame.getScmAuthorForIssue(issue, assignToAuthor);
+    final boolean assignToLastCommitter = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ASSIGN_TO_LAST_COMMITTER);
+    final String author = blame.getScmAuthorForIssue(issue, assignToLastCommitter);
     final User assignee;
 
     if (author == null) {
