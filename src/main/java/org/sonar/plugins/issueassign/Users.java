@@ -53,8 +53,7 @@ public class Users {
 
     if (this.isExtractSonarUserFromScmUser()) {
       sonarUserName = this.extractSonarUserWithRegEx(userNameFromScm);
-    }
-    else {
+    } else {
       sonarUserName = userNameFromScm;
     }
 
