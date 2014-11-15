@@ -47,6 +47,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_CHANGED_ISSUES_NOTIFICATION_CONTENT = "sonar.issueassign.notification.changed.content";
   public static final String PROPERTY_SEVERITY = "sonar.issueassign.severity";
   public static final String PROPERTY_ONLY_ASSIGN_NEW = "sonar.onlyassignnew";
+  public static final String PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME = "sonar.extract.sonar.user.from.scm.user";
 
   public static final String CONFIGURATION_CATEGORY = "Issue Assign";
   public static final String CONFIGURATION_SUBCATEGORY_WHEN = "When";
@@ -181,9 +182,9 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)
-                .type(PropertyType.BOOLEAN)
+          .type(PropertyType.BOOLEAN)
           .defaultValue("true")
-                .build(),
+          .build(),
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_DEFAULT_ASSIGNEE)
           .name("Default Assignee")
@@ -191,6 +192,15 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)
+          .build(),
+
+        PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)
+          .name("Extract SonarQube Username from SCM Username")
+          .description("Extract the SonarQube username from the SCM username associated with an issue using a regular expression.")
+          .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+          .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.STRING)
           .build()
       );
   }

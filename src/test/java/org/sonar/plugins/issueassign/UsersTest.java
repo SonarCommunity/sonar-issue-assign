@@ -22,8 +22,10 @@ package org.sonar.plugins.issueassign;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.sonar.api.config.Settings;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.api.user.UserQuery;
@@ -44,7 +46,12 @@ public class UsersTest {
   @Mock
   User nonEmailUser;
   @Mock
+  Settings settings;
+  @Mock
   User emailUser;
+  
+  @InjectMocks
+  Users testSubject;
 
   private static final String NON_EMAIL_USERNAME = "username";
   private static final String EMAIL_USERNAME = "username@domain.com";
@@ -61,88 +68,117 @@ public class UsersTest {
 
   @Test
   public void findSonarUser() throws Exception {
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
     when(userFinder.findByLogin(NON_EMAIL_USERNAME)).thenReturn(nonEmailUser);
 
-    final Users classUnderTest = new Users(userFinder);
-    final User user = classUnderTest.getSonarUser(NON_EMAIL_USERNAME);
+    final User user = testSubject.getSonarUser(NON_EMAIL_USERNAME);
     assertThat(user).isSameAs(nonEmailUser);
   }
 
   @Test(expected = SonarUserNotFoundException.class)
   public void sonarUserNotFoundAnywhere() throws Exception {
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
     when(userFinder.findByLogin(NON_EMAIL_USERNAME)).thenReturn(null);
 
-    final Users classUnderTest = new Users(userFinder);
-    classUnderTest.getSonarUser(NON_EMAIL_USERNAME);
+    testSubject.getSonarUser(NON_EMAIL_USERNAME);
   }
 
   @Test
   public void findSonarUserAsEmailAddress() throws SonarUserNotFoundException {
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
     when(userFinder.findByLogin(EMAIL_USERNAME)).thenReturn(null);
     when(userFinder.find(isA(UserQuery.class))).thenReturn(this.sonarUsers);
     when(emailUser.email()).thenReturn(EMAIL_USERNAME);
     when(nonEmailUser.email()).thenReturn(null);
 
-    final Users classUnderTest = new Users(userFinder);
-    final User user = classUnderTest.getSonarUser(EMAIL_USERNAME);
+    final User user = testSubject.getSonarUser(EMAIL_USERNAME);
 
     assertThat(user).isSameAs(this.emailUser);
   }
 
   @Test
   public void findSonarUserAsEmbeddedEmailAddress() throws SonarUserNotFoundException {
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
     when(userFinder.findByLogin(EMBEDDED_EMAIL_USERNAME)).thenReturn(null);
     when(userFinder.find(isA(UserQuery.class))).thenReturn(this.sonarUsers);
     when(emailUser.email()).thenReturn(EMAIL_USERNAME);
     when(nonEmailUser.email()).thenReturn(null);
 
-    final Users classUnderTest = new Users(userFinder);
-    final User user = classUnderTest.getSonarUser(EMBEDDED_EMAIL_USERNAME);
+    final User user = testSubject.getSonarUser(EMBEDDED_EMAIL_USERNAME);
 
     assertThat(user).isSameAs(this.emailUser);
   }
 
   @Test
   public void findSonarUserAsEmailAddressTwiceToTestCache() throws SonarUserNotFoundException {
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
     when(userFinder.findByLogin(EMAIL_USERNAME)).thenReturn(null);
     when(userFinder.find(isA(UserQuery.class))).thenReturn(this.sonarUsers);
     when(emailUser.email()).thenReturn(EMAIL_USERNAME);
     when(nonEmailUser.email()).thenReturn(null);
 
-    final Users classUnderTest = new Users(userFinder);
-    User user = classUnderTest.getSonarUser(EMAIL_USERNAME);
+    User user = testSubject.getSonarUser(EMAIL_USERNAME);
     assertThat(user).isSameAs(this.emailUser);
 
-    user = classUnderTest.getSonarUser(EMAIL_USERNAME);
+    user = testSubject.getSonarUser(EMAIL_USERNAME);
     assertThat(user).isSameAs(this.emailUser);
   }
 
   @Test(expected = SonarUserNotFoundException.class)
   public void findSonarUserAsEmailAddressNotFound() throws SonarUserNotFoundException {
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
     when(userFinder.findByLogin(EMAIL_USERNAME)).thenReturn(null);
     when(userFinder.find(isA(UserQuery.class))).thenReturn(this.sonarUsers);
     when(emailUser.email()).thenReturn(NON_MATCHING_EMAIL);
     when(nonEmailUser.email()).thenReturn(null);
 
-    final Users classUnderTest = new Users(userFinder);
-    classUnderTest.getSonarUser(EMAIL_USERNAME);
+    final Users testSubject = new Users(userFinder, settings);
+    testSubject.getSonarUser(EMAIL_USERNAME);
   }
 
   @Test
   public void testHasEmbeddedEmailAddress() {
-    final Users classUnderTest = new Users(userFinder);
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(null);
 
     String userName = "UserName<user@company.com>";
-    boolean result = classUnderTest.hasEmbeddedEmailAddress(userName);
+    boolean result = testSubject.hasEmbeddedEmailAddress(userName);
     assertThat(result).isEqualTo(true);
 
     userName = "<user@company.com>";
-    result = classUnderTest.hasEmbeddedEmailAddress(userName);
+    result = testSubject.hasEmbeddedEmailAddress(userName);
     assertThat(result).isEqualTo(true);
 
     userName = "UserName";
-    result = classUnderTest.hasEmbeddedEmailAddress(userName);
+    result = testSubject.hasEmbeddedEmailAddress(userName);
     assertThat(result).isEqualTo(false);
+  }
 
+  @Test
+  public void extractSonarUserFromScmUser() throws SonarUserNotFoundException {
+    final String scmUserName = "joe.blow.123456";
+
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(".*\\..*\\.(\\d{6})");
+    when(userFinder.findByLogin("123456")).thenReturn(this.nonEmailUser);
+
+    final User user = this.testSubject.getSonarUser(scmUserName);
+    assertThat(user).isEqualTo(this.nonEmailUser);
+  }
+
+  @Test(expected = SonarUserNotFoundException.class)
+  public void extractSonarUserFromScmUserButRegexFails() throws SonarUserNotFoundException {
+    final String scmUserName = "nobody";
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(".*\\..*\\.(\\d{6})");
+
+    this.testSubject.getSonarUser(scmUserName);
+  }
+
+  @Test(expected = SonarUserNotFoundException.class)
+  public void extractSonarUserFromScmUserButDoesntExistInSonar() throws SonarUserNotFoundException {
+    final String scmUserName = "joe.blow.123456";
+
+    when(settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME)).thenReturn(".*\\..*\\.(\\d{6})");
+    when(userFinder.findByLogin("123456")).thenReturn(null);
+
+    this.testSubject.getSonarUser(scmUserName);
   }
 }

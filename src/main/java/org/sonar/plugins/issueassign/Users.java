@@ -22,6 +22,7 @@ package org.sonar.plugins.issueassign;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.config.Settings;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.api.user.UserQuery;
@@ -39,24 +40,35 @@ public class Users {
   private static final Pattern EMBEDDED_EMAIL_PATTERN = Pattern.compile(".*<.*@.*>.*");
   private final UserFinder userFinder;
   private Map<String, User> emailToUserMap;
+  private final Settings settings;
 
-  public Users(final UserFinder userFinder) {
+  public Users(final UserFinder userFinder, final Settings settings) {
     this.userFinder = userFinder;
+    this.settings = settings;
   }
 
-  public User getSonarUser(final String userName) throws SonarUserNotFoundException {
+  public User getSonarUser(final String userNameFromScm) throws SonarUserNotFoundException {
 
-    final User sonarUser = this.userFinder.findByLogin(userName);
+    String sonarUserName;
+
+    if (this.isExtractSonarUserFromScmUser()) {
+      sonarUserName = this.extractSonarUserWithRegEx(userNameFromScm);
+    }
+    else {
+      sonarUserName = userNameFromScm;
+    }
+
+    final User sonarUser = this.userFinder.findByLogin(sonarUserName);
 
     if (sonarUser == null) {
-      if (isEmailAddress(userName)) {
+      if (isEmailAddress(sonarUserName)) {
         String emailAddress;
-        if (hasEmbeddedEmailAddress(userName)) {
-          LOG.debug("Username {} contains an embedded email address.", userName);
-          emailAddress = extractEmail(userName);
+        if (hasEmbeddedEmailAddress(sonarUserName)) {
+          LOG.debug("Username {} contains an embedded email address.", sonarUserName);
+          emailAddress = extractEmail(sonarUserName);
           LOG.debug("Extracted email address: {}", emailAddress);
         } else {
-          emailAddress = userName;
+          emailAddress = sonarUserName;
         }
 
         LOG.debug("SCM author is an email address, trying lookup by email...");
@@ -67,6 +79,28 @@ public class Users {
 
     LOG.debug("Found Sonar user: " + sonarUser.login());
     return sonarUser;
+  }
+
+  private String extractSonarUserWithRegEx(final String userName) throws SonarUserNotFoundException {
+    final String regex = this.getExtractRegex();
+    final Pattern p = Pattern.compile(regex);
+    final Matcher m = p.matcher(userName);
+
+    if (m.find()) {
+      LOG.debug("Extracted user {} using regex {}", userName, regex);
+      return m.group(1);
+    }
+
+    LOG.warn("SonarQube user not found using regex {}", regex);
+    throw new SonarUserNotFoundException();
+  }
+
+  private String getExtractRegex() {
+    return this.settings.getString(IssueAssignPlugin.PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME);
+  }
+
+  private boolean isExtractSonarUserFromScmUser() {
+    return StringUtils.isNotEmpty(this.getExtractRegex());
   }
 
   // a cheap solution, but may be enough.
