@@ -39,6 +39,11 @@ public class IssueWrapper {
     private Issue sonarIssue;
     private Settings settings;
     private Blame blame;
+    private NoAssignReason noAssignReason;
+
+    public NoAssignReason getNoAssignReason() {
+        return noAssignReason;
+    }
 
     public IssueWrapper(final Issue sonarIssue, final Settings settings, final Blame blame) {
         this.sonarIssue = sonarIssue;
@@ -63,11 +68,11 @@ public class IssueWrapper {
         }
 
         // only assign if new
-        return isNew;
+        return this.noAssignReason(isNew, NoAssignReason.NOT_NEW);
     }
 
     private boolean isUnassigned() {
-      return this.sonarIssue.assignee() == null;
+      return this.noAssignReason(this.sonarIssue.assignee() == null, NoAssignReason.ALREADY_ASSIGNED);
     }
 
     private boolean isSevereEnough() {
@@ -85,7 +90,7 @@ public class IssueWrapper {
 
         LOG.debug("Issue {} severe enough to auto-assign: {}", sonarIssue.key(), isSevereEnough);
 
-        return isSevereEnough;
+        return this.noAssignReason(isSevereEnough, NoAssignReason.INSUFFICIENT_SEVERITY);
     }
 
     private boolean issueCreatedAfterCutoffDate() throws IssueAssignPluginException {
@@ -106,7 +111,7 @@ public class IssueWrapper {
             LOG.error("Unable to parse date: " + issueCutoffDatePref);
         }
 
-        return result;
+        return this.noAssignReason(result, NoAssignReason.BEFORE_CUTOFF_DATE);
     }
 
     private boolean createdAfterCutoffDate(final Issue issue, final Date cutoffDate, final Date issueCreatedDate)
@@ -120,5 +125,13 @@ public class IssueWrapper {
         }
 
         return createdAfter;
+    }
+
+    private boolean noAssignReason(final boolean isAssignable, final NoAssignReason reason) {
+        if (!isAssignable) {
+            this.noAssignReason = reason;
+            return false;
+        }
+        return true;
     }
 }

@@ -53,6 +53,7 @@ public class IssueWrapperTest {
     public void test_issue_already_assigned() throws IssueAssignPluginException {
         when(this.issue.assignee()).thenReturn("some_guy");
         assertThat(this.testSubject.isAssignable()).isFalse();
+        assertThat(this.testSubject.getNoAssignReason()).isEqualTo(NoAssignReason.ALREADY_ASSIGNED);
     }
 
     @Test
@@ -83,6 +84,7 @@ public class IssueWrapperTest {
         when(this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW)).thenReturn(true);
 
         assertThat(this.testSubject.isAssignable()).isFalse();
+        assertThat(this.testSubject.getNoAssignReason()).isEqualTo(NoAssignReason.NOT_NEW);
     }
 
     @Test
@@ -139,6 +141,7 @@ public class IssueWrapperTest {
       when(settings.getString(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)).thenReturn(cutoffDateText);
       when(blame.getCommitDateForIssue(issue)).thenReturn(issueCreationDate);
       assertThat(this.testSubject.isAssignable()).isFalse();
+        assertThat(this.testSubject.getNoAssignReason()).isEqualTo(NoAssignReason.BEFORE_CUTOFF_DATE);
     }
 
     @Test
@@ -147,6 +150,7 @@ public class IssueWrapperTest {
         when(issue.severity()).thenReturn("MINOR");
 
         assertThat(this.testSubject.isAssignable()).isFalse();
+        assertThat(this.testSubject.getNoAssignReason()).isEqualTo(NoAssignReason.INSUFFICIENT_SEVERITY);
     }
 
     @Test
