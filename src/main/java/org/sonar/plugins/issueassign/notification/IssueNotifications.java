@@ -22,13 +22,14 @@ package org.sonar.plugins.issueassign.notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.component.Component;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.notifications.Notification;
 import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.DateUtils;
-import org.sonar.core.issue.IssuesBySeverity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,19 +45,24 @@ public class IssueNotifications {
     this.notificationsManager = notificationsManager;
   }
 
-  public void sendIssues(Project project, Map<String, IssuesBySeverity> newIssuesByAssignee, String notificationType) {
-    for (Map.Entry<String, IssuesBySeverity> entry : newIssuesByAssignee.entrySet()) {
+  public void sendIssues(Project project, Map<String, List<Issue>> newIssuesByAssignee, String notificationType) {
+    for (Map.Entry<String, List<Issue>> entry : newIssuesByAssignee.entrySet()) {
+
       String assignee = entry.getKey();
-      IssuesBySeverity newIssues = entry.getValue();
+      List<Issue> newIssues = entry.getValue();
+
       LOG.debug("Generating notification to {}.", assignee);
+
       Notification notification = newNotification(project, notificationType)
         .setDefaultMessage(newIssues.size() + " new issues on " + project.getLongName() + ".\n")
         .setFieldValue("projectDate", DateUtils.formatDateTime(project.getAnalysisDate()))
         .setFieldValue("count", String.valueOf(newIssues.size()))
         .setFieldValue("assignee", assignee);
+
       for (String severity : Severity.ALL) {
-        notification.setFieldValue("count-" + severity, String.valueOf(newIssues.issues(severity)));
+        notification.setFieldValue("count-" + severity, String.valueOf(getCountOfSeverityType(severity, newIssues)));
       }
+
       notificationsManager.scheduleForSending(notification);
     }
   }
@@ -65,6 +71,16 @@ public class IssueNotifications {
     return new Notification(key)
       .setFieldValue("projectName", project.longName())
       .setFieldValue("projectKey", project.key());
+  }
+  
+  private int getCountOfSeverityType(String severity, List<Issue> issues) {
+    int count = 0;
+    for (Issue issue : issues) {
+        if (severity.equals( issue.severity())) {
+            count++;
+        }
+    }
+    return count;
   }
 
 }

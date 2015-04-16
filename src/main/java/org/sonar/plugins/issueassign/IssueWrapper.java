@@ -41,14 +41,14 @@ public class IssueWrapper {
     private Blame blame;
     private NoAssignReason noAssignReason;
 
-    public NoAssignReason getNoAssignReason() {
-        return noAssignReason;
-    }
-
     public IssueWrapper(final Issue sonarIssue, final Settings settings, final Blame blame) {
         this.sonarIssue = sonarIssue;
         this.settings = settings;
         this.blame = blame;
+    }
+
+    public NoAssignReason getNoAssignReason() {
+        return noAssignReason;
     }
 
     public boolean isAssignable() throws IssueAssignPluginException {

@@ -26,19 +26,22 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.issue.internal.DefaultIssue;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.DateUtils;
-import org.sonar.batch.issue.IssueCache;
-import org.sonar.core.issue.IssuesBySeverity;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
 import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
@@ -48,7 +51,7 @@ public class SendIssueNotificationsPostJobTest {
   Project project;
 
   @Mock
-  IssueCache issueCache;
+  ProjectIssues projectIssues;
 
   @Mock
   IssueNotifications notifications;
@@ -60,58 +63,78 @@ public class SendIssueNotificationsPostJobTest {
   SensorContext sensorContext;
 
   @Captor
-  ArgumentCaptor<Map<String, IssuesBySeverity>> newIssuesArgument;
+  ArgumentCaptor<Map<String, List<Issue>>> newIssuesArgument;
 
   @Captor
-  ArgumentCaptor<Map<String, IssuesBySeverity>> changedIssuesArgument;
+  ArgumentCaptor<Map<String, List<Issue>>> changedIssuesArgument;
 
   @Test
   public void should_send_notif_if_new_issues() throws Exception {
-    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
-    when(issueCache.all()).thenReturn(Arrays.asList(
-      new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user1"),
-      new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user2"),
-      new DefaultIssue().setNew(false).setSeverity("MINOR")
-      ));
 
-    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
+    Issue issue1 = new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user1");
+    Issue issue2 = new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user2");
+    Issue issue3 = new DefaultIssue().setNew(false).setSeverity("MINOR");
+
+    final List<Issue> issueList = new ArrayList<Issue>();
+    issueList.add( issue1 );
+    issueList.add( issue2 );
+    issueList.add( issue3 );
+
+    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
+    when(this.projectIssues.issues()).thenReturn(issueList);
+
+    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(this.projectIssues, notifications);
     job.executeOn(project, sensorContext);
 
     verify(notifications).sendIssues(eq(project), newIssuesArgument.capture(), eq(NOTIFICATION_TYPE_NEW));
     assertThat(newIssuesArgument.getValue().size()).isEqualTo(2);
-    for (IssuesBySeverity issues : newIssuesArgument.getValue().values()) {
+
+    for (List<Issue> issues : newIssuesArgument.getValue().values()) {
       assertThat(issues.size()).isEqualTo(1);
     }
   }
 
   @Test
   public void should_send_notif_if_changed_issues() throws Exception {
-    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
-    when(issueCache.all()).thenReturn(Arrays.asList(
-      new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user1").setChanged(true).setSendNotifications(true),
-      new DefaultIssue().setNew(false).setSeverity("MINOR").setAssignee("user1").setChanged(false).setSendNotifications(true),
-      new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user2").setChanged(true).setSendNotifications(true),
-      new DefaultIssue().setNew(true).setSeverity("MINOR").setSendNotifications(true)
-      ));
 
-    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
+    Issue issue1 = new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user1").setChanged(
+      true).setSendNotifications(true);
+    Issue issue2 = new DefaultIssue().setNew(false).setSeverity("MINOR").setAssignee("user1").setChanged(
+      false).setSendNotifications(true);
+    Issue issue3 = new DefaultIssue().setNew(false).setSeverity("MAJOR").setAssignee("user2").setChanged(
+      true).setSendNotifications(true);
+    Issue issue4 = new DefaultIssue().setNew(true).setSeverity("MINOR").setSendNotifications(true);
+
+    final List<Issue> issueList = new ArrayList<Issue>();
+    issueList.add(issue1);
+    issueList.add(issue2);
+    issueList.add(issue3);
+    issueList.add(issue4);
+
+    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
+    when(this.projectIssues.issues()).thenReturn(issueList);
+
+    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(this.projectIssues, notifications);
     job.executeOn(project, sensorContext);
 
     verify(notifications).sendIssues(eq(project), changedIssuesArgument.capture(), eq(NOTIFICATION_TYPE_CHANGED));
     assertThat(changedIssuesArgument.getValue().size()).isEqualTo(2);
-    for (IssuesBySeverity issues : changedIssuesArgument.getValue().values()) {
+    for (List<Issue> issues : changedIssuesArgument.getValue().values()) {
       assertThat(issues.size()).isEqualTo(1);
     }
   }
 
   @Test
   public void should_not_send_notif_if_no_new_issues() throws Exception {
-    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
-    when(issueCache.all()).thenReturn(Arrays.asList(
-      new DefaultIssue().setNew(false)
-      ));
 
-    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(issueCache, notifications);
+    Issue issue1 = new DefaultIssue().setNew(false);
+    final List<Issue> issueList = new ArrayList<Issue>();
+    issueList.add(issue1);
+
+    when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));
+    when(projectIssues.issues()).thenReturn(issueList);
+
+    SendIssueNotificationsPostJob job = new SendIssueNotificationsPostJob(projectIssues, notifications);
     job.executeOn(project, sensorContext);
 
     verifyZeroInteractions(notifications);

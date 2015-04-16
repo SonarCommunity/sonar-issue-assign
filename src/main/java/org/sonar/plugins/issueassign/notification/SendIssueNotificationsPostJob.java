@@ -19,17 +19,20 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.issue.internal.DefaultIssue;
 import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
-import org.sonar.batch.issue.IssueCache;
-import org.sonar.core.issue.IssuesBySeverity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_CHANGED;
@@ -41,16 +44,16 @@ import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_
 public class SendIssueNotificationsPostJob implements PostJob {
 
   private static final Logger LOG = LoggerFactory.getLogger(SendIssueNotificationsPostJob.class);
-  private final IssueCache issueCache;
+  private final ProjectIssues projectIssues;
   private final IssueNotifications notifications;
 
-  protected SendIssueNotificationsPostJob(IssueCache issueCache, IssueNotifications notifications) {
-    this.issueCache = issueCache;
+  protected SendIssueNotificationsPostJob(ProjectIssues projectIssues, IssueNotifications notifications) {
+    this.projectIssues = projectIssues;
     this.notifications = notifications;
   }
 
-  public SendIssueNotificationsPostJob(IssueCache issueCache, NotificationManager notificationsManager) {
-    this.issueCache = issueCache;
+  public SendIssueNotificationsPostJob(ProjectIssues projectIssues, NotificationManager notificationsManager) {
+    this.projectIssues = projectIssues;
     this.notifications = new IssueNotifications(notificationsManager);
   }
     
@@ -61,24 +64,29 @@ public class SendIssueNotificationsPostJob implements PostJob {
 
   private void sendNotifications(Project project) {
     LOG.debug("Generating notifications for {}", project.getName());
-    Map<String, IssuesBySeverity> newIssuesByAssignee = new HashMap<String, IssuesBySeverity>();
-    Map<String, IssuesBySeverity> changedIssuesByAssignee = new HashMap<String, IssuesBySeverity>();
-    for (DefaultIssue issue : issueCache.all()) {
-      String assignee = issue.assignee();
+    Map<String, List<Issue>> newIssuesByAssignee = new HashMap<String, List<Issue>>();
+    Map<String, List<Issue>> changedIssuesByAssignee = new HashMap<String, List<Issue>>();
+
+    for (Issue issue : projectIssues.issues()) {
+
+      DefaultIssue defaultIssue = (DefaultIssue)issue;
+      String assignee = defaultIssue.assignee();
+
       if (assignee == null) {
         continue;
       }
-      if (issue.isNew() && issue.resolution() == null) {
-        IssuesBySeverity newIssuesBySeverity = newIssuesByAssignee.get(assignee);
-        if (newIssuesBySeverity == null) {
-          newIssuesBySeverity = new IssuesBySeverity();
+
+      if (defaultIssue.isNew() && defaultIssue.resolution() == null) {
+          List<Issue> newIssuesBySeverity = newIssuesByAssignee.get(assignee);
+      if (CollectionUtils.isEmpty( newIssuesBySeverity)) {
+          newIssuesBySeverity = new ArrayList<Issue>();
           newIssuesByAssignee.put(assignee, newIssuesBySeverity);
         }
         newIssuesBySeverity.add(issue);
-      } else if (!issue.isNew() && issue.isChanged() && issue.mustSendNotifications()) {
-        IssuesBySeverity changedIssuesBySeverity = changedIssuesByAssignee.get(assignee);
+      } else if (!defaultIssue.isNew() && defaultIssue.isChanged() && defaultIssue.mustSendNotifications()) {
+          List<Issue> changedIssuesBySeverity = changedIssuesByAssignee.get(assignee);
         if (changedIssuesBySeverity == null) {
-          changedIssuesBySeverity = new IssuesBySeverity();
+          changedIssuesBySeverity = new ArrayList<Issue>();
           changedIssuesByAssignee.put(assignee, changedIssuesBySeverity);
         }
         changedIssuesBySeverity.add(issue);

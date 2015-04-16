@@ -26,17 +26,20 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.issue.internal.DefaultIssue;
 import org.sonar.api.notifications.Notification;
 import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.DateUtils;
-import org.sonar.core.issue.IssuesBySeverity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,10 +59,18 @@ public class IssueNotificationsTest {
   public void should_send_new_issues() throws Exception {
     Date date = DateUtils.parseDateTime("2013-05-18T13:00:03+0200");
     Project project = new Project("struts").setAnalysisDate(date);
-    IssuesBySeverity issuesBySeverity = mock(IssuesBySeverity.class);
-    when(issuesBySeverity.size()).thenReturn(42);
-    when(issuesBySeverity.issues("MINOR")).thenReturn(10);
-    Map<String, IssuesBySeverity> issuesByUser = ImmutableMap.of("user1", issuesBySeverity);
+
+    DefaultIssue majorIssue = new DefaultIssue();
+    majorIssue.setSeverity(org.sonar.api.batch.sensor.issue.Issue.Severity.MAJOR.name());
+
+    DefaultIssue minorIssue = new DefaultIssue();
+    minorIssue.setSeverity(org.sonar.api.batch.sensor.issue.Issue.Severity.MINOR.name());
+
+    List<Issue> issuesBySeverity = new ArrayList<Issue>();
+    issuesBySeverity.add(majorIssue);
+    issuesBySeverity.add(minorIssue);
+
+    Map<String, List<Issue>> issuesByUser = ImmutableMap.of("user1", issuesBySeverity);
 
     ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
 
@@ -67,8 +78,8 @@ public class IssueNotificationsTest {
 
     verify(manager).scheduleForSending(notificationCaptor.capture());
     Notification notification = notificationCaptor.getValue();
-    assertThat(notification.getFieldValue("count")).isEqualTo("42");
-    assertThat(notification.getFieldValue("count-MINOR")).isEqualTo("10");
+    assertThat(notification.getFieldValue("count")).isEqualTo("2");
+    assertThat(notification.getFieldValue("count-MINOR")).isEqualTo("1");
     assertThat(DateUtils.parseDateTime(notification.getFieldValue("projectDate"))).isEqualTo(date);
   }
 
