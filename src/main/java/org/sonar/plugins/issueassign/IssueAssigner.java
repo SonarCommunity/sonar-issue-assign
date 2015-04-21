@@ -74,7 +74,7 @@ public class IssueAssigner implements IssueHandler {
     final User assignee;
 
     if (author == null) {
-      LOG.debug("No author found for issue [" + issue.key() + " component [" + issue.componentKey() + "]");
+      LOG.debug("No author found for issue [" + issue.key() + "] in component [" + issue.componentKey() + "]");
       assignee = assign.getAssignee();
     } else {
       LOG.debug("Found SCM author [" + author + "]");
