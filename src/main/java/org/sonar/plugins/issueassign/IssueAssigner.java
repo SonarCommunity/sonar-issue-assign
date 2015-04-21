@@ -58,7 +58,7 @@ public class IssueAssigner implements IssueHandler {
       if (issueWrapper.isAssignable()) {
         this.assignIssue(context, issue);
       } else {
-          LOG.info("Issue won't be auto-assigned.  Reason: {}", issueWrapper.getNoAssignReason());
+          LOG.info("Issue [" + issue.key() + "] won't be auto-assigned, reason: " + issueWrapper.getNoAssignReason());
       }
     } catch (final IssueAssignPluginException pluginException) {
       LOG.warn("Unable to assign issue [" + issue.key() + "]");
