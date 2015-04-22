@@ -58,7 +58,7 @@ public class IssueAssigner implements IssueHandler {
       if (issueWrapper.isAssignable()) {
         this.assignIssue(context, issue);
       } else {
-          LOG.info("Issue won't be auto-assigned.  Reason: {}", issueWrapper.getNoAssignReason());
+          LOG.info("Issue {} won't be auto-assigned.  Reason: {}", issue.key(), issueWrapper.getNoAssignReason());
       }
     } catch (final IssueAssignPluginException pluginException) {
       LOG.warn("Unable to assign issue [" + issue.key() + "]");
@@ -74,7 +74,7 @@ public class IssueAssigner implements IssueHandler {
     final User assignee;
 
     if (author == null) {
-      LOG.debug("No author found for issue [" + issue.key() + " component [" + issue.componentKey() + "]");
+      LOG.debug("No author found for issue {} component {}", issue.key(), issue.componentKey());
       assignee = assign.getAssignee();
     } else {
       LOG.debug("Found SCM author [" + author + "]");
