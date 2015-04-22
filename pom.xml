@@ -17,7 +17,7 @@
 
     <artifactId>sonar-issue-assign-plugin</artifactId>
     <packaging>sonar-plugin</packaging>
-    <version>1.6</version>
+    <version>1.6-SNAPSHOT</version>
 
     <name>SonarQube Issue Assign Plugin</name>
     <description>Assigns issues to Sonar users</description>
@@ -48,7 +48,7 @@
         <connection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</connection>
         <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-issue-assign.git</developerConnection>
         <url>https://github.com/SonarCommunity/sonar-issue-assign</url>
-      <tag>sonar-issue-assign-plugin-1.6</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <issueManagement>
