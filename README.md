@@ -8,6 +8,13 @@ The master branch will generally be up to date with the latest SonarQube API.
 
 Tested on Subversion and Git.
 
+## Download
+
+Latest version (SonarQube 5.1+): http://repository.codehaus.org/org/codehaus/sonar-plugins/sonar-issue-assign-plugin/1.6/sonar-issue-assign-plugin-1.6.jar
+
+SonarQube 4.4 - 5.0 (LTS): http://repository.codehaus.org/org/codehaus/sonar-plugins/sonar-issue-assign-plugin/1.5/sonar-issue-assign-plugin-1.5.jar
+
+
 Issue tracking: http://jira.codehaus.org/browse/SONARPLUGINS/component/16478
 
 ## Installation
