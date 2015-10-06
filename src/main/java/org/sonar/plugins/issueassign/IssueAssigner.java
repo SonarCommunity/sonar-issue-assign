@@ -29,6 +29,7 @@ import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
 import org.sonar.plugins.issueassign.measures.MeasuresFinder;
+import org.sonar.plugins.issueassign.util.DiagnosticLogger;
 
 public class IssueAssigner implements IssueHandler {
 
@@ -36,11 +37,14 @@ public class IssueAssigner implements IssueHandler {
   private final Settings settings;
   private final Blame blame;
   private final Assign assign;
+  private final DiagnosticLogger logger;
 
-  public IssueAssigner(final Settings settings, final UserFinder userFinder, final SonarIndex sonarIndex) {
+  public IssueAssigner(final Settings settings, final UserFinder userFinder,
+                       final SonarIndex sonarIndex, final DiagnosticLogger logger) {
     this.blame = new Blame(new ResourceFinder(sonarIndex), new MeasuresFinder(sonarIndex), settings);
     this.assign = new Assign(settings, userFinder);
     this.settings = settings;
+    this.logger = logger;
   }
 
   @Override
@@ -51,19 +55,19 @@ public class IssueAssigner implements IssueHandler {
     }
 
     final Issue issue = context.issue();
-    LOG.debug("Found new issue [" + issue.key() + "]");
+    LOG.debug("Found new issue: ", issue.key());
 
     try {
       final IssueWrapper issueWrapper = new IssueWrapper(issue, this.settings, this.blame);
       if (issueWrapper.isAssignable()) {
         this.assignIssue(context, issue);
       } else {
-          LOG.info("Issue {} won't be auto-assigned.  Reason: {}", issue.key(), issueWrapper.getNoAssignReason());
+          logger.logReason(issueWrapper);
       }
     } catch (final IssueAssignPluginException pluginException) {
-      LOG.warn("Unable to assign issue [" + issue.key() + "]");
+      LOG.warn("Unable to assign issue: {}", issue.key());
     } catch (final Exception e) {
-      LOG.error("Error assigning issue [" + issue.key() + "]", e);
+      LOG.error("Error assigning issue: {}", issue.key(), e);
     }
   }
 
@@ -81,11 +85,12 @@ public class IssueAssigner implements IssueHandler {
       assignee = assign.getAssignee(author);
     }
 
-    LOG.info("Assigning issue [" + issue.key() + "] to assignee [" + assignee.login() + "]");
+    this.logger.logAssign(issue.key(), assignee.login());
     context.assign(assignee);
   }
 
   private boolean isPluginEnabled() {
     return this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ENABLED);
   }
+
 }

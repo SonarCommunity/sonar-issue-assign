@@ -32,6 +32,7 @@ import org.sonar.api.issue.IssueHandler;
 import org.sonar.api.user.User;
 import org.sonar.api.user.UserFinder;
 import org.sonar.plugins.issueassign.exception.IssueAssignPluginException;
+import org.sonar.plugins.issueassign.util.DiagnosticLogger;
 
 import static org.mockito.Mockito.*;
 
@@ -54,6 +55,8 @@ public class IssueAssignerTest {
   private User assignee;
   @Mock
   private SonarIndex sonarIndex;
+  @Mock
+  private DiagnosticLogger logger;
 
   @InjectMocks
   private IssueAssigner testSubject;
@@ -82,7 +85,7 @@ public class IssueAssignerTest {
   }
 
   @Test
-  public void testOnIssueNotAssignable() throws Exception {
+  public void testOnIssueNotAssignable() {
 
     when(context.issue()).thenReturn(issue);
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
@@ -90,11 +93,10 @@ public class IssueAssignerTest {
     when(settings.getBoolean(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW)).thenReturn(true);
     when(issue.isNew()).thenReturn(false); // not assignable
 
-    Whitebox.setInternalState(testSubject, "blame", blame);
-    Whitebox.setInternalState(testSubject, "assign", assign);
     testSubject.onIssue(context);
 
     verifyZeroInteractions(blame, assign);
+    verify(logger).logReason(any(IssueWrapper.class));
     verify(context, never()).assign(assignee);
   }
 

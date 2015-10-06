@@ -58,6 +58,10 @@ public class IssueWrapper {
                this.issueCreatedAfterCutoffDate();
     }
 
+    public String getKey() {
+        return this.sonarIssue.key();
+    }
+
     protected boolean isNewEnough() {
         final boolean isNew = this.sonarIssue.isNew();
         final boolean onlyAssignNew = this.settings.getBoolean(IssueAssignPlugin.PROPERTY_ONLY_ASSIGN_NEW);

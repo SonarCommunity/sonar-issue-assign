@@ -26,6 +26,7 @@ import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.rule.Severity;
 import org.sonar.plugins.issueassign.notification.*;
+import org.sonar.plugins.issueassign.util.DiagnosticLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,14 +49,32 @@ public final class IssueAssignPlugin extends SonarPlugin {
   public static final String PROPERTY_SEVERITY = "sonar.issueassign.severity";
   public static final String PROPERTY_ONLY_ASSIGN_NEW = "sonar.onlyassignnew";
   public static final String PROPERTY_EXTRACT_SONAR_USERNAME_FROM_SCM_USERNAME = "sonar.extract.sonar.user.from.scm.user";
+  public static final String PROPERTY_DIAGNOSTIC_LOGGING = "sonar.diagnostic.logging";
 
   public static final String CONFIGURATION_CATEGORY = "Issue Assign";
   public static final String CONFIGURATION_SUBCATEGORY_WHEN = "When";
   public static final String CONFIGURATION_SUBCATEGORY_NOTIFY = "Notify";
   public static final String CONFIGURATION_SUBCATEGORY_WHO = "Who";
+  public static final String CONFIGURATION_SUBCATEGORY_LOGGING = "Logging";
 
   public static final String NOTIFICATION_TYPE_NEW = "my-new-issues";
   public static final String NOTIFICATION_TYPE_CHANGED = "my-changed-issues";
+
+  private static final String FALSE = "false";
+
+  public static final List<PropertyDefinition> getLoggingProperties() {
+    return ImmutableList
+        .of(
+            PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_DIAGNOSTIC_LOGGING)
+                .name("Enable diagnostic logging")
+                .description("Extra log messages for diagnostic purposes will appear at INFO log level.")
+                .category(IssueAssignPlugin.CONFIGURATION_CATEGORY)
+                .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_LOGGING)
+                .onQualifiers(Qualifiers.PROJECT)
+                .type(PropertyType.BOOLEAN)
+                .defaultValue(FALSE)
+                .build());
+  }
 
   public static List<PropertyDefinition> getNotificationProperties() {
     return ImmutableList
@@ -127,7 +146,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHEN)
           .onQualifiers(Qualifiers.PROJECT)
           .type(PropertyType.BOOLEAN)
-          .defaultValue("false")
+          .defaultValue(FALSE)
           .build(),
 
         PropertyDefinition.builder(IssueAssignPlugin.PROPERTY_ISSUE_CUTOFF_DATE)
@@ -170,7 +189,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
           .subCategory(IssueAssignPlugin.CONFIGURATION_SUBCATEGORY_WHO)
           .onQualifiers(Qualifiers.PROJECT)
           .type(PropertyType.BOOLEAN)
-          .defaultValue("false")
+          .defaultValue(FALSE)
           .build(),
 
         PropertyDefinition
@@ -208,6 +227,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
   @Override
   public List<Object> getExtensions() {
     List<Object> extensions = new ArrayList<Object>();
+    extensions.add(DiagnosticLogger.class);
     extensions.add(IssueAssigner.class);
     extensions.add(SendIssueNotificationsPostJob.class);
     extensions.add(MyNewIssuesEmailTemplate.class);
@@ -219,6 +239,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
     extensions.addAll(IssueAssignPlugin.getWhoProperties());
     extensions.addAll(IssueAssignPlugin.getWhenProperties());
     extensions.addAll(IssueAssignPlugin.getNotificationProperties());
+    extensions.addAll(IssueAssignPlugin.getLoggingProperties());
     return extensions;
   }
 }

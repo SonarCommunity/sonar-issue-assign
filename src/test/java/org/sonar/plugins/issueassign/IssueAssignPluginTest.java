@@ -30,7 +30,7 @@ public class IssueAssignPluginTest {
   public void testGetExtensions() throws Exception {
     final IssueAssignPlugin classUnderTest = new IssueAssignPlugin();
     assertThat(classUnderTest.getExtensions())
-      .hasSize(21)
+      .hasSize(23)
       .contains(IssueAssigner.class,
         SendIssueNotificationsPostJob.class,
         MyNewIssuesEmailTemplate.class,
