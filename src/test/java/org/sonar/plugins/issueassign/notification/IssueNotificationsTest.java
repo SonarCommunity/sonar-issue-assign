@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,11 +27,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.internal.DefaultIssue;
 import org.sonar.api.notifications.Notification;
-import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
+import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.DateUtils;
+import org.sonar.core.issue.DefaultIssue;
+import org.sonar.server.notification.NotificationManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,12 +62,12 @@ public class IssueNotificationsTest {
     Project project = new Project("struts").setAnalysisDate(date);
 
     DefaultIssue majorIssue = new DefaultIssue();
-    majorIssue.setSeverity(org.sonar.api.batch.sensor.issue.Issue.Severity.MAJOR.name());
+    majorIssue.setSeverity(Severity.MAJOR);
 
     DefaultIssue minorIssue = new DefaultIssue();
-    minorIssue.setSeverity(org.sonar.api.batch.sensor.issue.Issue.Severity.MINOR.name());
+    minorIssue.setSeverity(Severity.MINOR);
 
-    List<Issue> issuesBySeverity = new ArrayList<Issue>();
+    List<Issue> issuesBySeverity = new ArrayList<>();
     issuesBySeverity.add(majorIssue);
     issuesBySeverity.add(minorIssue);
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,11 +41,11 @@ public class MeasuresFinderTest {
   private SonarIndex sonarIndex;
 
   @Mock
-  private Measure scmAuthorsByLineMeasure;
+  private Measure<?> scmAuthorsByLineMeasure;
   @Mock
-  private Measure scmLastCommitDateTimesByLineMeasure;
+  private Measure<?> scmLastCommitDateTimesByLineMeasure;
   @Mock
-  private Measure scmRevisionsByLineMeasure;
+  private Measure<?> scmRevisionsByLineMeasure;
 
   private static final String RESOURCE_EFFECTIVE_KEY = "RESOURCE_EFFECTIVE_KEY";
 

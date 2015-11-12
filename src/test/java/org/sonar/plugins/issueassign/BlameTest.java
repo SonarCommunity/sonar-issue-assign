@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,7 +51,7 @@ public class BlameTest {
   @Mock
   private ScmMeasures scmMeasures;
   @Mock
-  private Map authorMap;
+  private Map<Integer, String> authorMap;
   @Mock
   private ResourceFinder resourceFinder;
   @Mock
@@ -91,13 +91,13 @@ public class BlameTest {
   @Test
   public void testGetAuthorSameAsLastCommitter() throws Exception {
 
-    final Map<Integer, String> authorMap = new HashMap<Integer, String>();
+    final Map<Integer, String> authorMap = new HashMap<>();
     authorMap.put(1, AUTHOR1);
     authorMap.put(2, AUTHOR1);
     authorMap.put(3, AUTHOR1);
     authorMap.put(4, AUTHOR1);
 
-    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<>();
     lastCommitDateMap.put(1, DATE1);
     lastCommitDateMap.put(2, DATE2);
     lastCommitDateMap.put(3, DATE3);
@@ -120,7 +120,7 @@ public class BlameTest {
 
     final int issueLineNumber = 1;
 
-    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<>();
     lastCommitDateMap.put(1, DATE1);
     lastCommitDateMap.put(2, DATE2);
     lastCommitDateMap.put(3, DATE3);
@@ -139,7 +139,7 @@ public class BlameTest {
   @Test
   public void getCommitDateForIssueWithNoLineNumber() throws Exception {
 
-    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<>();
     lastCommitDateMap.put(1, DATE1);
     lastCommitDateMap.put(2, DATE2);
     lastCommitDateMap.put(3, DATE3);
@@ -167,7 +167,7 @@ public class BlameTest {
   @Test
   public void assignBlamelessToLastCommitter() throws Exception {
 
-    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<>();
     lastCommitDateMap.put(1, DATE1);
     lastCommitDateMap.put(2, DATE2);
     lastCommitDateMap.put(3, DATE3);
@@ -188,12 +188,12 @@ public class BlameTest {
   @Test
   public void testGetAuthorIsLastCommitter() throws Exception {
 
-    final Map<Integer, String> authorMap = new HashMap<Integer, String>();
+    final Map<Integer, String> authorMap = new HashMap<>();
     authorMap.put(1, AUTHOR1);
     authorMap.put(2, AUTHOR2);
     authorMap.put(3, AUTHOR3);
 
-    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<>();
     lastCommitDateMap.put(1, DATE1);
     lastCommitDateMap.put(2, DATE2);
     lastCommitDateMap.put(3, DATE3);
@@ -221,11 +221,11 @@ public class BlameTest {
   @Test(expected = NoUniqueAuthorForLastCommitException.class)
   public void testGetAuthorNoUniqueAuthorForLastCommit() throws Exception {
 
-    final Map<Integer, String> authorMap = new HashMap<Integer, String>();
+    final Map<Integer, String> authorMap = new HashMap<>();
     authorMap.put(1, AUTHOR1);
     authorMap.put(2, AUTHOR2);
 
-    final Map<Integer, Date> lastCommitDateMap = new HashMap<Integer, Date>();
+    final Map<Integer, Date> lastCommitDateMap = new HashMap<>();
     lastCommitDateMap.put(1, DATE1);
     lastCommitDateMap.put(2, DATE1);
 

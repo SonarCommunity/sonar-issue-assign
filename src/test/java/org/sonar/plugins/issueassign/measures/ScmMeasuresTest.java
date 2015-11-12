@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,11 +42,11 @@ public class ScmMeasuresTest {
   @Mock
   private DecoratorContext decoratorContext;
   @Mock
-  private Measure authorPerLineMeasure;
+  private Measure<?> authorPerLineMeasure;
   @Mock
-  private Measure lastCommitDateTimeByLine;
+  private Measure<?> lastCommitDateTimeByLine;
   @Mock
-  private Measure revisionsByLine;
+  private Measure<?> revisionsByLine;
 
   private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
   private static final String DATE1 = "2013-01-31T12:12:12-0800";

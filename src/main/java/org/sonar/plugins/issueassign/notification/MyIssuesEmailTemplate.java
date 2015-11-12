@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -89,7 +89,7 @@ public abstract class MyIssuesEmailTemplate extends EmailTemplate {
 
     String count = notification.getFieldValue("count");
 
-    Map<String, String> values = new HashMap<String, String>();
+    Map<String, String> values = new HashMap<>();
     values.put("projectName", projectName);
     values.put("date", dateString);
     values.put("count", count);

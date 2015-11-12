@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,8 +47,8 @@ public class MeasuresFinder {
       lastCommitByLineMeasureData, revisionsByLineMeasureData);
   }
 
-  private String getMeasureData(final Resource resource, final Metric metric) throws MissingScmMeasureDataException {
-    final Measure measure = this.sonarIndex.getMeasure(resource, metric);
+  private String getMeasureData(final Resource resource, final Metric<?> metric) throws MissingScmMeasureDataException {
+    final Measure<?> measure = this.sonarIndex.getMeasure(resource, metric);
     if (MeasureUtils.hasData(measure)) {  // NOSONAR
       LOG.debug("Found data for metric [" + metric.getKey() + "] on resource [" + resource.getKey() + "]: data: [" + measure.getData() + "]");
       return measure.getData();

@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -226,7 +226,7 @@ public final class IssueAssignPlugin extends SonarPlugin {
 
   @Override
   public List<Object> getExtensions() {
-    List<Object> extensions = new ArrayList<Object>();
+    List<Object> extensions = new ArrayList<>();
     extensions.add(DiagnosticLogger.class);
     extensions.add(IssueAssigner.class);
     extensions.add(SendIssueNotificationsPostJob.class);

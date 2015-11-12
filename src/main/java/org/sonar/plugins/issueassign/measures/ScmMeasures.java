@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,17 +74,17 @@ public class ScmMeasures {
     return resourceKey;
   }
 
-  private Map<Integer, String> parseIntString(final Metric metric, final String measure) {
+  private Map<Integer, String> parseIntString(final Metric<?> metric, final String measure) {
     this.logMeasureData(metric, measure);
     return KeyValueFormat.parseIntString(measure);
   }
 
-  private Map<Integer, Date> parseIntDateTime(final Metric metric, final String measure) {
+  private Map<Integer, Date> parseIntDateTime(final Metric<?> metric, final String measure) {
     this.logMeasureData(metric, measure);
     return KeyValueFormat.parseIntDateTime(measure);
   }
 
-  private void logMeasureData(final Metric metric, final String measure) {
+  private void logMeasureData(final Metric<?> metric, final String measure) {
     LOG.debug(metric.getName() + ": [" + measure + "]");
   }
 }
