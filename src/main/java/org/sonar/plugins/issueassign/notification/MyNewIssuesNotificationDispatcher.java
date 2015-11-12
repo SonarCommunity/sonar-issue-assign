@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import org.sonar.api.notifications.NotificationDispatcherMetadata;
-import org.sonar.api.notifications.NotificationManager;
-
 import static org.sonar.plugins.issueassign.IssueAssignPlugin.NOTIFICATION_TYPE_NEW;
+
+import org.sonar.server.notification.NotificationDispatcherMetadata;
+import org.sonar.server.notification.NotificationManager;
 
 /**
  * This dispatcher means: "notify me when new issues assigned to me are introduced during project scan".

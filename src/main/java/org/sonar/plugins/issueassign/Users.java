@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -133,7 +133,7 @@ public class Users {
   }
 
   private void initialiseUserMap() {
-    this.emailToUserMap = new HashMap<String, User>();
+    this.emailToUserMap = new HashMap<>();
     final List<User> sonarUsers = this.getAllSonarUsers();
 
     for (final User user : sonarUsers) {

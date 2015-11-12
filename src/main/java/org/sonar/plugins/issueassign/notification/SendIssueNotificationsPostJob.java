@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,15 @@
  */
 package org.sonar.plugins.issueassign.notification;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
-import org.sonar.api.issue.internal.DefaultIssue;
-import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
+import org.sonar.core.issue.DefaultIssue;
+import org.sonar.server.notification.NotificationManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +55,7 @@ public class SendIssueNotificationsPostJob implements PostJob {
     this.projectIssues = projectIssues;
     this.notifications = new IssueNotifications(notificationsManager);
   }
-    
+
   @Override
   public void executeOn(Project project, SensorContext context) {
     sendNotifications(project);
@@ -64,8 +63,8 @@ public class SendIssueNotificationsPostJob implements PostJob {
 
   private void sendNotifications(Project project) {
     LOG.debug("Generating notifications for {}", project.getName());
-    Map<String, List<Issue>> newIssuesByAssignee = new HashMap<String, List<Issue>>();
-    Map<String, List<Issue>> changedIssuesByAssignee = new HashMap<String, List<Issue>>();
+    Map<String, List<Issue>> newIssuesByAssignee = new HashMap<>();
+    Map<String, List<Issue>> changedIssuesByAssignee = new HashMap<>();
 
     for (Issue issue : projectIssues.issues()) {
 
@@ -78,15 +77,15 @@ public class SendIssueNotificationsPostJob implements PostJob {
 
       if (defaultIssue.isNew() && defaultIssue.resolution() == null) {
           List<Issue> newIssuesBySeverity = newIssuesByAssignee.get(assignee);
-      if (CollectionUtils.isEmpty( newIssuesBySeverity)) {
-          newIssuesBySeverity = new ArrayList<Issue>();
+      if (newIssuesBySeverity == null || newIssuesBySeverity.isEmpty()) {
+          newIssuesBySeverity = new ArrayList<>();
           newIssuesByAssignee.put(assignee, newIssuesBySeverity);
         }
         newIssuesBySeverity.add(issue);
       } else if (!defaultIssue.isNew() && defaultIssue.isChanged() && defaultIssue.mustSendNotifications()) {
           List<Issue> changedIssuesBySeverity = changedIssuesByAssignee.get(assignee);
         if (changedIssuesBySeverity == null) {
-          changedIssuesBySeverity = new ArrayList<Issue>();
+          changedIssuesBySeverity = new ArrayList<>();
           changedIssuesByAssignee.put(assignee, changedIssuesBySeverity);
         }
         changedIssuesBySeverity.add(issue);

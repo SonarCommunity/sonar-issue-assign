@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,7 @@ import java.util.*;
 public class Blame {
 
   private static final Logger LOG = LoggerFactory.getLogger(Blame.class);
-  private Map<String, ScmMeasures> resourceMeasuresMap = new HashMap<String, ScmMeasures>();
+  private Map<String, ScmMeasures> resourceMeasuresMap = new HashMap<>();
   private final ResourceFinder resourceFinder;
   private final MeasuresFinder measuresFinder;
   private final Settings settings;
@@ -127,13 +127,13 @@ public class Blame {
   private Date getLastCommitDate(final String resourceKey) throws IssueAssignPluginException {
     final ScmMeasures scmMeasures = this.getMeasuresForResource(resourceKey);
     final Collection<Date> commitDatesForResource = scmMeasures.getLastCommitsByLine().values();
-    final SortedSet<Date> sortedSet = new TreeSet(commitDatesForResource);
+    final SortedSet<Date> sortedSet = new TreeSet<>(commitDatesForResource);
     return sortedSet.last();
   }
 
   private List<Integer> getLinesFromLastCommit(final String resourceKey, final Date lastCommitDate) throws IssueAssignPluginException {
 
-    final List<Integer> lines = new ArrayList<Integer>();
+    final List<Integer> lines = new ArrayList<>();
     final ScmMeasures scmMeasures = this.getMeasuresForResource(resourceKey);
     final Iterator<Map.Entry<Integer, Date>> lastCommitsIterator =
       scmMeasures.getLastCommitsByLine().entrySet().iterator();

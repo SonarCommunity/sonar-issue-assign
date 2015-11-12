@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,10 +28,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
-import org.sonar.api.issue.internal.DefaultIssue;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.DateUtils;
+import org.sonar.core.issue.DefaultIssue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class SendIssueNotificationsPostJobTest {
     Issue issue2 = new DefaultIssue().setNew(true).setSeverity("MAJOR").setAssignee("user2");
     Issue issue3 = new DefaultIssue().setNew(false).setSeverity("MINOR");
 
-    final List<Issue> issueList = new ArrayList<Issue>();
+    final List<Issue> issueList = new ArrayList<>();
     issueList.add( issue1 );
     issueList.add( issue2 );
     issueList.add( issue3 );
@@ -105,7 +105,7 @@ public class SendIssueNotificationsPostJobTest {
       true).setSendNotifications(true);
     Issue issue4 = new DefaultIssue().setNew(true).setSeverity("MINOR").setSendNotifications(true);
 
-    final List<Issue> issueList = new ArrayList<Issue>();
+    final List<Issue> issueList = new ArrayList<>();
     issueList.add(issue1);
     issueList.add(issue2);
     issueList.add(issue3);
@@ -128,7 +128,7 @@ public class SendIssueNotificationsPostJobTest {
   public void should_not_send_notif_if_no_new_issues() throws Exception {
 
     Issue issue1 = new DefaultIssue().setNew(false);
-    final List<Issue> issueList = new ArrayList<Issue>();
+    final List<Issue> issueList = new ArrayList<>();
     issueList.add(issue1);
 
     when(project.getAnalysisDate()).thenReturn(DateUtils.parseDate("2013-05-18"));

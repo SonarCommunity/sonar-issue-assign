@@ -1,7 +1,7 @@
 /*
  * SonarQube Issue Assign Plugin
  * Copyright (C) 2014 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.component.Component;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.notifications.Notification;
-import org.sonar.api.notifications.NotificationManager;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.DateUtils;
+import org.sonar.server.notification.NotificationManager;
 
 import java.util.List;
 import java.util.Map;
